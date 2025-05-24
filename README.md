@@ -20,6 +20,13 @@
 - 头像上传
 - 用户资料编辑
 
+### 🤖 AI智能聊天
+- **多角色AI助手**：MBTI专家、职业规划师、情感导师、学习助手、生活顾问
+- **流式对话**：支持WebSocket实时通信，打字机效果
+- **智能分析**：基于MBTI理论的性格分析和建议
+- **个性化服务**：根据不同AI角色提供专业建议
+- **聊天记录**：本地存储聊天历史，支持多会话管理
+
 ### 💬 消息系统
 - 消息列表
 - 聊天界面
@@ -51,7 +58,8 @@
 ```
 wx-mbti/
 ├── api/                    # API接口封装
-│   └── request.js         # 请求工具函数
+│   ├── request.js         # 请求工具函数
+│   └── ai.js              # AI聊天API
 ├── behaviors/             # 小程序行为
 ├── components/            # 自定义组件
 │   ├── card/             # 卡片组件
@@ -64,17 +72,19 @@ wx-mbti/
 │   ├── mock.js          # 主要Mock数据
 │   └── request.js       # Mock请求
 ├── pages/                # 页面文件
-│   ├── chat/            # 聊天页面
+│   ├── chat/            # 聊天页面（支持AI对话）
 │   ├── dataCenter/      # 数据中心
 │   ├── home/            # 首页
 │   ├── login/           # 登录页面
 │   ├── loginCode/       # 验证码登录
-│   ├── message/         # 消息页面
+│   ├── message/         # 消息页面（AI角色列表）
 │   ├── my/              # 个人中心
 │   │   └── info-edit/   # 资料编辑
 │   ├── release/         # 发布页面
 │   ├── search/          # 搜索页面
 │   └── setting/         # 设置页面
+├── server-example/       # 后端服务器示例
+│   └── ai-websocket-server.js  # AI WebSocket服务器
 ├── static/               # 静态资源
 ├── utils/                # 工具函数
 ├── app.js               # 小程序入口文件
@@ -92,6 +102,7 @@ wx-mbti/
 - **样式预处理**: Less
 - **代码规范**: ESLint + Prettier
 - **包管理**: npm
+- **AI通信**: WebSocket (支持流式响应)
 
 ## 🚀 快速开始
 
@@ -113,27 +124,101 @@ cd wx-mbti
 npm install
 ```
 
-3. **开发者工具配置**
+3. **配置AI服务**
+编辑 `config.js` 文件，配置您的AI WebSocket服务地址：
+```javascript
+export default {
+  isMock: false,
+  baseUrl: 'https://your-api-domain.com',
+  aiWebSocketUrl: 'wss://your-ai-domain.com/ws/ai'
+};
+```
+
+4. **开发者工具配置**
 - 打开微信开发者工具
 - 导入项目文件夹
+- 在小程序管理后台配置WebSocket域名
 - 构建npm包
 - 开始开发
+
+### AI服务部署
+
+项目提供了完整的AI WebSocket服务器示例 (`server-example/ai-websocket-server.js`)：
+
+1. **安装服务器依赖**
+```bash
+cd server-example
+npm install ws
+```
+
+2. **启动AI服务**
+```bash
+node ai-websocket-server.js
+```
+
+3. **集成大模型**
+在 `generateAIResponse` 函数中集成您的大模型API：
+```javascript
+async function generateAIResponse(userMessage) {
+  // 调用您的大模型API
+  // 例如：OpenAI GPT、百度文心一言、阿里通义千问等
+  const response = await callLLMAPI(userMessage);
+  return response;
+}
+```
 
 ### 项目配置
 
 1. **修改项目配置**
 编辑 `project.config.json` 中的 `appid` 字段为你的小程序AppID
 
-2. **配置接口地址**
-修改 `config.js` 文件：
-```javascript
-export default {
-  isMock: false,        // 是否使用Mock数据
-  baseUrl: 'your-api-url', // 你的后端API地址
-};
-```
+2. **配置通信域名**
+在微信小程序管理后台配置以下域名：
+- HTTPS 请求域名：你的API服务域名
+- WebSocket 域名：你的AI WebSocket服务域名
 
 ## 📋 开发指南
+
+### AI聊天功能
+
+#### 基本用法
+```javascript
+import { chatWithAI } from '~/api/ai';
+
+// 发送消息到AI
+const conversationId = chatWithAI.startConversation();
+chatWithAI.sendMessage(
+  '你好，我想了解MBTI',
+  conversationId,
+  (chunk, isComplete) => {
+    // 处理流式响应
+    this.updateMessage(chunk, isComplete);
+  },
+  (fullContent) => {
+    // 消息完成
+    this.messageComplete(fullContent);
+  },
+  (error) => {
+    // 错误处理
+    console.error('AI聊天错误:', error);
+  }
+);
+```
+
+#### AI角色配置
+在 `pages/message/index.js` 中可以自定义AI角色：
+```javascript
+const AI_CHARACTERS = [
+  {
+    userId: 'ai_custom',
+    name: '自定义AI',
+    avatar: '/static/ai/custom.png',
+    description: '您的专属AI助手',
+    isAI: true,
+    messages: []
+  }
+];
+```
 
 ### 页面路由配置
 
@@ -191,6 +276,12 @@ const result = await request('/api/endpoint', 'POST', { data });
 - 信息流卡片
 - 快速发布
 
+### AI聊天
+- 多角色AI助手列表
+- 流式对话界面
+- 打字机效果
+- 智能回复
+
 ### 个人中心
 - 用户信息展示
 - 功能入口
@@ -240,6 +331,7 @@ npm run lint:fix
 - [TDesign 小程序组件库](https://tdesign.tencent.com/miniprogram/overview)
 - [微信小程序官方文档](https://developers.weixin.qq.com/miniprogram/dev/framework/)
 - [微信开发者工具](https://developers.weixin.qq.com/miniprogram/dev/devtools/download.html)
+- [WebSocket API 文档](https://developers.weixin.qq.com/miniprogram/dev/api/network/websocket/wx.connectSocket.html)
 
 ## 📞 反馈与支持
 
@@ -247,6 +339,21 @@ npm run lint:fix
 - 提交 [Issue](../../issues)
 - 发起 [Pull Request](../../pulls)
 - 在项目中留言讨论
+
+## 🚀 AI功能特色
+
+### 多角色AI助手
+- **MBTI专家**：专业性格分析和测试指导
+- **职业规划师**：基于性格类型的职业建议
+- **情感导师**：人际关系和沟通技巧指导
+- **学习助手**：个性化学习方法推荐
+- **生活顾问**：生活习惯和目标设定建议
+
+### 智能交互特性
+- **流式对话**：实时打字效果，自然对话体验
+- **上下文理解**：保持对话连贯性
+- **个性化回复**：根据不同AI角色特点调整回复风格
+- **错误恢复**：网络异常时的优雅降级处理
 
 ---
 

@@ -5,6 +5,7 @@ page {
   box-sizing: border-box;
   height: 100vh;
   padding-bottom: calc(env(safe-area-inset-bottom) + 112rpx);
+  background-color: #f5f5f5;
 }
 
 .nav-bar {
@@ -14,19 +15,69 @@ page {
 .message-list {
   height: 0;
   flex-grow: 1;
+  background-color: #ffffff;
+}
+
+.message-item {
+  display: flex;
+  align-items: center;
+  padding: 24rpx 32rpx;
+  background-color: #ffffff;
+  border-bottom: 1rpx solid #f0f0f0;
+  position: relative;
+}
+
+.message-item-hover {
+  background-color: #f8f8f8;
 }
 
 .avatar {
-  border-radius: 50% !important;
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 50%;
+  margin-right: 24rpx;
+  flex-shrink: 0;
 }
 
-.content > view {
-  width: 560rpx;
-  white-space: nowrap;
+.content {
+  flex: 1;
+  min-width: 0;
+  padding-right: 20rpx;
+}
+
+.name {
+  font-size: 32rpx;
+  font-weight: 500;
+  color: #333333;
+  margin-bottom: 8rpx;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.content.unread > view {
-  width: 510rpx;
+.description {
+  font-size: 28rpx;
+  color: #999999;
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.unread-badge {
+  width: 36rpx;
+  height: 36rpx;
+  background-color: #ff4757;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 20rpx;
+  font-weight: 500;
+  flex-shrink: 0;
+  min-width: 36rpx;
+  box-sizing: border-box;
+  padding: 0 8rpx;
+  border-radius: 18rpx;
 }

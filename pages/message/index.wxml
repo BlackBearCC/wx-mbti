@@ -1,6 +1,6 @@
 <wxs src="./index.wxs" module="utils" />
 
-<nav nav-type="title" title-text="全部消息"></nav>
+<nav nav-type="title" title-text="AI助手"></nav>
 <scroll-view
   class="message-list"
   scroll-y
@@ -8,18 +8,26 @@
   refresher-triggered="{{ loading }}"
   bindrefresherrefresh="getMessageList"
 >
-  <t-cell
+  <view 
     wx:for="{{ messageList }}"
     wx:key="index"
-    t-class-image="avatar"
-    t-class-description="content {{ utils.isRead(item.messages) ? '' : 'unread' }}"
-    image="{{ item.avatar }}"
-    title="{{ item.name }}"
-    description="{{ item.messages[item.messages.length - 1].content }}"
-    hover
-    bind:tap="toChat"
+    class="message-item"
+    hover-class="message-item-hover"
+    bindtap="toChat"
     data-user-id="{{ item.userId }}"
   >
-    <t-badge slot="right-icon" count="{{ utils.computeUnreadNum(item.messages) }}" class="wrapper" />
-  </t-cell>
+    <!-- 头像 -->
+    <image class="avatar" src="{{ item.avatar || '/static/ai/default-ai.png' }}" />
+    
+    <!-- 内容区域 -->
+    <view class="content">
+      <view class="name">{{ item.name }}</view>
+      <view class="description">{{ item.lastMessage }}</view>
+    </view>
+    
+    <!-- 未读消息数 -->
+    <view wx:if="{{ item.unreadCount > 0 }}" class="unread-badge">
+      {{ item.unreadCount > 99 ? '99+' : item.unreadCount }}
+    </view>
+  </view>
 </scroll-view>

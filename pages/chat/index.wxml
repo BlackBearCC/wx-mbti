@@ -26,8 +26,14 @@
 
         <view wx:else class="message-area">
           <t-avatar image="{{ avatar }}" size="small" />
-          <view class="message other">
-          <text space="nbsp">{{ item.content }}</text>
+          <view class="message other {{item.isError ? 'error' : ''}}">
+            <text space="nbsp">{{ item.content }}</text>
+            <!-- AI打字效果 -->
+            <view wx:if="{{ item.isTyping }}" class="typing-indicator">
+              <text class="typing-dot"></text>
+              <text class="typing-dot"></text>
+              <text class="typing-dot"></text>
+            </view>
           </view>
         </view>
       </block>
@@ -43,16 +49,25 @@
       value="{{ input }}"
       type="text"
       confirm-type="send"
-      placeholder="请输入"
+      placeholder="与AI对话..."
       placeholder-style="color: #00000066"
       adjust-position="{{ false }}"
       hold-keyboard
       confirm-hold
+      disabled="{{ isTyping }}"
       bindkeyboardheightchange="handleKeyboardHeightChange"
       bindblur="handleBlur"
       bindinput="handleInput"
       bindconfirm="sendMessage"
     />
   </view>
-  <t-button class="send" theme="primary" shape="round" disabled="{{ !input }}" bind:tap="sendMessage">发送</t-button>
+  <t-button 
+    class="send" 
+    theme="primary" 
+    shape="round" 
+    disabled="{{ !input || isTyping }}" 
+    bind:tap="sendMessage"
+  >
+    {{ isTyping ? '回复中' : '发送' }}
+  </t-button>
 </view>

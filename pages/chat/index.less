@@ -60,6 +60,52 @@
   background-color: #f3f3f3;
 }
 
+/* AI错误消息样式 */
+.message.other.error {
+  background-color: #ffebee;
+  border: 1rpx solid #ffcdd2;
+  color: #c62828;
+}
+
+/* AI打字效果 */
+.typing-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 8rpx;
+  margin-left: 16rpx;
+}
+
+.typing-dot {
+  width: 8rpx;
+  height: 8rpx;
+  border-radius: 50%;
+  background-color: #999;
+  animation: typing-animation 1.4s infinite ease-in-out;
+}
+
+.typing-dot:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.typing-dot:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+.typing-dot:nth-child(3) {
+  animation-delay: 0s;
+}
+
+@keyframes typing-animation {
+  0%, 80%, 100% {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
 .loading {
   position: absolute;
   right: calc(100% + 16rpx);
@@ -103,8 +149,20 @@
   margin-bottom: 40rpx;
 }
 
+/* 输入框禁用状态 */
+.input > input:disabled {
+  background-color: #f8f8f8;
+  color: #999;
+}
+
 .send {
   width: 128rpx !important;
   margin: 0;
   font-weight: normal !important;
+}
+
+/* 发送按钮禁用状态 */
+.send:disabled {
+  background-color: #e0e0e0 !important;
+  color: #999 !important;
 }
