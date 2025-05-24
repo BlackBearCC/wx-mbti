@@ -1,6 +1,42 @@
 <wxs src="./index.wxs" module="utils" />
 
 <nav nav-type="title" title-text="AI助手"></nav>
+
+<!-- 聊天室轮播图 -->
+<view class="chat-rooms-section">
+  <view class="section-title">热门聊天室</view>
+  <swiper 
+    class="rooms-swiper" 
+    indicator-dots 
+    autoplay 
+    interval="4000"
+    duration="500"
+    indicator-color="rgba(255,255,255,0.3)"
+    indicator-active-color="#ffffff"
+    bindchange="onSwiperChange"
+  >
+    <swiper-item wx:for="{{ chatRooms }}" wx:key="roomId">
+      <view 
+        class="room-card" 
+        style="background: {{ item.background }}"
+        bindtap="enterChatRoom"
+        data-room-id="{{ item.roomId }}"
+      >
+        <view class="room-icon">{{ item.icon }}</view>
+        <view class="room-info">
+          <view class="room-name">{{ item.name }}</view>
+          <view class="room-desc">{{ item.description }}</view>
+          <view class="room-stats">
+            <text class="online-count">{{ item.aiCharacters.length }}个AI助手在线</text>
+          </view>
+        </view>
+        <view class="enter-btn">进入</view>
+      </view>
+    </swiper-item>
+  </swiper>
+</view>
+
+<!-- AI助手列表 -->
 <scroll-view
   class="message-list"
   scroll-y
@@ -8,6 +44,7 @@
   refresher-triggered="{{ loading }}"
   bindrefresherrefresh="getMessageList"
 >
+  <view class="section-title">AI助手</view>
   <view 
     wx:for="{{ messageList }}"
     wx:key="index"

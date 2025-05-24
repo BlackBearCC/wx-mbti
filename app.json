@@ -20,6 +20,11 @@
       "pages": ["index"]
     },
     {
+      "root": "pages/chat-room",
+      "name": "chat-room",
+      "pages": ["index"]
+    },
+    {
       "root": "pages/login",
       "name": "login",
       "pages": ["login"]

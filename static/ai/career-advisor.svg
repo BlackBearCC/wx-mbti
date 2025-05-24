@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- 背景圆形 -->
+  <circle cx="100" cy="100" r="100" fill="url(#bgGradient2)"/>
+  
+  <!-- 渐变定义 -->
+  <defs>
+    <linearGradient id="bgGradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2196F3;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#21CBF3;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- 人物头部 -->
+  <circle cx="100" cy="75" r="32" fill="#ffd89b"/>
+  
+  <!-- 眼睛 -->
+  <circle cx="90" cy="70" r="2.5" fill="#333"/>
+  <circle cx="110" cy="70" r="2.5" fill="#333"/>
+  <circle cx="91" cy="69" r="0.8" fill="#fff"/>
+  <circle cx="111" cy="69" r="0.8" fill="#fff"/>
+  
+  <!-- 眉毛 -->
+  <path d="M 85 64 Q 90 62 95 64" stroke="#333" stroke-width="1.5" fill="none"/>
+  <path d="M 105 64 Q 110 62 115 64" stroke="#333" stroke-width="1.5" fill="none"/>
+  
+  <!-- 鼻子 -->
+  <path d="M 100 73 L 98 77 L 102 77 Z" fill="#e6c79a"/>
+  
+  <!-- 嘴巴（自信的微笑） -->
+  <path d="M 95 82 Q 100 86 105 82" stroke="#333" stroke-width="1.5" fill="none"/>
+  
+  <!-- 头发（商务发型） -->
+  <path d="M 75 60 Q 100 40 125 60 Q 120 50 100 45 Q 80 50 75 60" fill="#2c3e50"/>
+  
+  <!-- 西装 -->
+  <path d="M 70 110 L 80 105 L 100 107 L 120 105 L 130 110 L 130 160 L 70 160 Z" fill="#34495e"/>
+  
+  <!-- 衬衫 -->
+  <path d="M 85 107 L 100 109 L 115 107 L 115 160 L 85 160 Z" fill="#ecf0f1"/>
+  
+  <!-- 领带 -->
+  <path d="M 98 109 L 102 109 L 105 125 L 100 135 L 95 125 Z" fill="#e74c3c"/>
+  
+  <!-- 西装领子 -->
+  <path d="M 85 107 L 95 115 L 100 109 L 105 115 L 115 107" stroke="#2c3e50" stroke-width="2" fill="none"/>
+  
+  <!-- 公文包图标 -->
+  <rect x="140" y="45" width="20" height="15" fill="#8b4513" rx="2"/>
+  <rect x="142" y="47" width="16" height="11" fill="#a0522d"/>
+  <circle cx="150" cy="52" r="1" fill="#333"/>
+  <rect x="148" y="42" width="4" height="3" fill="#8b4513"/>
+  
+  <!-- 上升箭头 -->
+  <path d="M 155 75 L 165 85 M 155 75 L 165 65 M 155 75 L 175 75" stroke="#fff" stroke-width="2" fill="none"/>
+  
+  <!-- 底部标识 -->
+  <text x="100" y="185" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#fff" font-weight="bold">CAREER</text>
+</svg> 

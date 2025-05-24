@@ -1,0 +1,131 @@
+<wxs src="./index.wxs" module="utils" />
+
+<t-navbar class="nav-bar" title="{{ roomName }}" left-arrow>
+  <view slot="right" class="nav-right" bindtap="toggleCharacterList">
+    <t-icon name="user" size="48rpx" />
+  </view>
+</t-navbar>
+
+<!-- AI角色选择面板 -->
+<view wx:if="{{ showCharacterList }}" class="character-overlay" bindtap="toggleCharacterList">
+  <view class="character-panel" catchtap="">
+    <view class="panel-header">选择AI助手</view>
+    <view class="character-list">
+      <view 
+        wx:for="{{ aiCharacters }}" 
+        wx:key="userId"
+        class="character-item"
+        bindtap="selectCharacter"
+        data-user-id="{{ item.userId }}"
+      >
+        <t-avatar image="{{ item.avatar }}" size="medium" />
+        <view class="character-info">
+          <view class="character-name">{{ item.name }}</view>
+          <view class="character-desc">{{ item.description }}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>
+
+<view class="chat-container">
+  <!-- 聊天室成员展示 -->
+  <view class="room-members">
+    <view class="members-title">聊天室成员</view>
+    <view class="members-list">
+      <view class="member-item">
+        <t-avatar image="{{ myAvatar }}" size="small" />
+        <text class="member-name">我</text>
+      </view>
+      <view 
+        wx:for="{{ aiCharacters }}" 
+        wx:key="userId"
+        class="member-item ai-member"
+      >
+        <t-avatar image="{{ item.avatar }}" size="small" />
+        <text class="member-name">{{ item.name }}</text>
+        <text class="ai-tag">AI</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 消息列表 -->
+  <scroll-view class="content" scroll-y scroll-into-view="{{ anchor }}">
+    <view class="messages">
+      <block wx:for="{{ messages }}" wx:key="index">
+        <!-- 时间分隔 -->
+        <view wx:if="{{ index === 0 || item.time - messages[index - 1].time > 120000 }}" class="time">
+          {{ utils.formatTime(item.time) }}
+        </view>
+
+        <!-- 系统消息 -->
+        <view wx:if="{{ item.isSystem }}" class="system-message">
+          <text>{{ item.content }}</text>
+        </view>
+
+        <!-- 用户消息 -->
+        <view wx:elif="{{ item.from === 0 }}" class="message-area">
+          <view class="message self">
+            <text space="nbsp">{{ item.content }}</text>
+            <t-loading
+              wx:if="{{ item.messageId === null }}"
+              t-class="loading"
+              theme="spinner"
+              size="32rpx"
+              class="wrapper"
+            />
+          </view>
+          <t-avatar image="{{ myAvatar }}" size="small" />
+        </view>
+
+        <!-- AI消息 -->
+        <view wx:else class="message-area">
+          <view class="ai-info">
+            <t-avatar image="{{ item.fromUser ? item.fromUser.avatar : '/static/ai/default-ai.png' }}" size="small" />
+            <text class="ai-name">{{ item.fromUser ? item.fromUser.name : 'AI助手' }}</text>
+          </view>
+          <view class="message other {{ item.isError ? 'error' : '' }}">
+            <text space="nbsp">{{ item.content }}</text>
+            <!-- AI打字效果 -->
+            <view wx:if="{{ item.isTyping }}" class="typing-indicator">
+              <text class="typing-dot"></text>
+              <text class="typing-dot"></text>
+              <text class="typing-dot"></text>
+            </view>
+          </view>
+        </view>
+      </block>
+      <view id="bottom" />
+    </view>
+  </scroll-view>
+</view>
+
+<view class="block" style="margin-bottom: {{ keyboardHeight }}px" />
+<view class="bottom" style="margin-bottom: {{ keyboardHeight }}px">
+  <view class="input">
+    <input
+      value="{{ input }}"
+      type="text"
+      confirm-type="send"
+      placeholder="在聊天室中与AI助手对话..."
+      placeholder-style="color: #00000066"
+      adjust-position="{{ false }}"
+      hold-keyboard
+      confirm-hold
+      disabled="{{ isTyping }}"
+      bindkeyboardheightchange="handleKeyboardHeightChange"
+      bindblur="handleBlur"
+      bindinput="handleInput"
+      bindconfirm="sendMessage"
+    />
+  </view>
+  <t-button 
+    class="send" 
+    theme="primary" 
+    shape="round" 
+    disabled="{{ !input || isTyping }}" 
+    bind:tap="sendMessage"
+  >
+    {{ isTyping ? '回复中' : '发送' }}
+  </t-button>
+</view> 

@@ -1,0 +1,57 @@
+// pages/chat-room/index.wxs
+function formatTime(timestamp) {
+  var now = getDate();
+  var time = getDate(timestamp);
+  var nowTime = now.getTime();
+  var msgTime = time.getTime();
+  var diff = nowTime - msgTime;
+  
+  // 1分钟内
+  if (diff < 60 * 1000) {
+    return '刚刚';
+  }
+  
+  // 1小时内
+  if (diff < 60 * 60 * 1000) {
+    var minutes = Math.floor(diff / (60 * 1000));
+    return minutes + '分钟前';
+  }
+  
+  // 今天
+  var nowYear = now.getFullYear();
+  var nowMonth = now.getMonth();
+  var nowDate = now.getDate();
+  var timeYear = time.getFullYear();
+  var timeMonth = time.getMonth();
+  var timeDate = time.getDate();
+  
+  if (nowYear === timeYear && nowMonth === timeMonth && nowDate === timeDate) {
+    var hours = time.getHours();
+    var minutes = time.getMinutes();
+    return (hours < 10 ? '0' : '') + hours + ':' + (minutes < 10 ? '0' : '') + minutes;
+  }
+  
+  // 昨天
+  var yesterday = new Date(nowTime - 24 * 60 * 60 * 1000);
+  if (timeYear === yesterday.getFullYear() && 
+      timeMonth === yesterday.getMonth() && 
+      timeDate === yesterday.getDate()) {
+    var hours = time.getHours();
+    var minutes = time.getMinutes();
+    return '昨天 ' + (hours < 10 ? '0' : '') + hours + ':' + (minutes < 10 ? '0' : '') + minutes;
+  }
+  
+  // 今年
+  if (nowYear === timeYear) {
+    var month = timeMonth + 1;
+    var date = timeDate;
+    return (month < 10 ? '0' : '') + month + '/' + (date < 10 ? '0' : '') + date;
+  }
+  
+  // 其他
+  return timeYear + '/' + (timeMonth + 1) + '/' + timeDate;
+}
+
+module.exports = {
+  formatTime: formatTime
+}; 

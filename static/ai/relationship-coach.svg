@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- 背景圆形 -->
+  <circle cx="100" cy="100" r="100" fill="url(#bgGradient3)"/>
+  
+  <!-- 渐变定义 -->
+  <defs>
+    <linearGradient id="bgGradient3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ff9a9e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#fad0c4;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- 人物头部 -->
+  <circle cx="100" cy="78" r="34" fill="#ffd89b"/>
+  
+  <!-- 眼睛（温和的眼神） -->
+  <ellipse cx="88" cy="72" rx="3" ry="2.5" fill="#333"/>
+  <ellipse cx="112" cy="72" rx="3" ry="2.5" fill="#333"/>
+  <circle cx="89" cy="71" r="1" fill="#fff"/>
+  <circle cx="113" cy="71" r="1" fill="#fff"/>
+  
+  <!-- 眉毛（柔和的弧度） -->
+  <path d="M 82 66 Q 88 63 94 66" stroke="#8b4513" stroke-width="1.5" fill="none"/>
+  <path d="M 106 66 Q 112 63 118 66" stroke="#8b4513" stroke-width="1.5" fill="none"/>
+  
+  <!-- 鼻子 -->
+  <ellipse cx="100" cy="77" rx="2" ry="3" fill="#e6c79a"/>
+  
+  <!-- 嘴巴（温暖的微笑） -->
+  <path d="M 92 85 Q 100 90 108 85" stroke="#333" stroke-width="2" fill="none"/>
+  
+  <!-- 头发（柔和的波浪） -->
+  <path d="M 72 65 Q 85 45 100 50 Q 115 45 128 65 Q 125 55 115 52 Q 100 47 85 52 Q 75 55 72 65" fill="#d2691e"/>
+  
+  <!-- 服装（温暖色调） -->
+  <ellipse cx="100" cy="135" rx="45" ry="35" fill="#ff6b6b"/>
+  
+  <!-- 围巾/装饰 -->
+  <ellipse cx="100" cy="112" rx="25" ry="8" fill="#4ecdc4"/>
+  
+  <!-- 心形图标 -->
+  <path d="M 140 55 C 140 50 145 45 150 45 C 155 45 160 50 160 55 C 160 65 150 75 150 75 C 150 75 140 65 140 55 Z" fill="#ff69b4"/>
+  <path d="M 150 45 C 155 45 160 50 160 55 C 165 50 170 45 175 45 C 180 45 185 50 185 55 C 185 65 175 75 175 75 C 175 75 150 75 150 75" fill="#ff69b4"/>
+  
+  <!-- 小心形装饰 -->
+  <circle cx="45" cy="60" r="4" fill="#ff69b4" opacity="0.7"/>
+  <path d="M 43 58 C 43 56 44 55 45 55 C 46 55 47 56 47 58 C 47 61 45 63 45 63 C 45 63 43 61 43 58 Z" fill="#ff1493"/>
+  
+  <!-- 温暖光芒效果 -->
+  <circle cx="100" cy="78" r="45" fill="none" stroke="#fff" stroke-width="1" opacity="0.3"/>
+  
+  <!-- 底部标识 -->
+  <text x="100" y="185" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#fff" font-weight="bold">EMOTION</text>
+</svg> 

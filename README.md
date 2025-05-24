@@ -20,17 +20,20 @@
 - 头像上传
 - 用户资料编辑
 
-### 🤖 AI智能聊天
-- **多角色AI助手**：MBTI专家、职业规划师、情感导师、学习助手、生活顾问
+### 🤖 AI智能聊天系统
+- **主题聊天室**：金融投资、娱乐休闲、每日记事等多个主题聊天室
+- **多AI角色群聊**：每个聊天室配置多个专业AI助手，支持群聊模式
+- **智能角色分配**：用户可@特定AI角色或让系统智能分配回复
+- **个人AI助手**：MBTI专家、职业规划师、情感导师、学习助手、生活顾问
 - **流式对话**：支持WebSocket实时通信，打字机效果
 - **智能分析**：基于MBTI理论的性格分析和建议
-- **个性化服务**：根据不同AI角色提供专业建议
-- **聊天记录**：本地存储聊天历史，支持多会话管理
+- **聊天记录管理**：自动保存聊天历史，支持多会话切换
 
 ### 💬 消息系统
-- 消息列表
-- 聊天界面
+- 轮播图聊天室入口
+- AI助手列表
 - 实时通讯
+- 未读消息提醒
 
 ### 📝 动态发布
 - 图片上传
@@ -72,12 +75,13 @@ wx-mbti/
 │   ├── mock.js          # 主要Mock数据
 │   └── request.js       # Mock请求
 ├── pages/                # 页面文件
-│   ├── chat/            # 聊天页面（支持AI对话）
+│   ├── chat/            # 单人AI聊天页面
+│   ├── chat-room/       # 聊天室页面（多AI群聊）
 │   ├── dataCenter/      # 数据中心
 │   ├── home/            # 首页
 │   ├── login/           # 登录页面
 │   ├── loginCode/       # 验证码登录
-│   ├── message/         # 消息页面（AI角色列表）
+│   ├── message/         # 消息页面（聊天室+AI助手）
 │   ├── my/              # 个人中心
 │   │   └── info-edit/   # 资料编辑
 │   ├── release/         # 发布页面
@@ -179,7 +183,36 @@ async function generateAIResponse(userMessage) {
 
 ## 📋 开发指南
 
-### AI聊天功能
+### 聊天室功能
+
+#### 聊天室配置
+在 `pages/chat-room/index.js` 中可以自定义聊天室：
+```javascript
+const CHAT_ROOMS = {
+  'custom_room': {
+    roomId: 'custom_room',
+    name: '自定义聊天室',
+    aiCharacters: ['ai_mbti_expert', 'ai_career_advisor']
+  }
+};
+```
+
+#### 轮播图聊天室
+在 `pages/message/index.js` 中配置轮播图展示的聊天室：
+```javascript
+const CHAT_ROOMS = [
+  {
+    roomId: 'finance_room',
+    name: '金融投资',
+    description: '专业金融分析，投资理财建议',
+    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    icon: '💰',
+    aiCharacters: ['ai_mbti_expert', 'ai_career_advisor', 'ai_life_coach']
+  }
+];
+```
+
+### AI角色管理
 
 #### 基本用法
 ```javascript
@@ -206,7 +239,7 @@ chatWithAI.sendMessage(
 ```
 
 #### AI角色配置
-在 `pages/message/index.js` 中可以自定义AI角色：
+在 `pages/message/index.js` 或 `pages/chat-room/index.js` 中可以自定义AI角色：
 ```javascript
 const AI_CHARACTERS = [
   {
@@ -214,17 +247,44 @@ const AI_CHARACTERS = [
     name: '自定义AI',
     avatar: '/static/ai/custom.png',
     description: '您的专属AI助手',
-    isAI: true,
     messages: []
   }
 ];
+```
+
+### 聊天室群聊模式
+
+#### @特定AI角色
+用户可以通过@功能与特定AI角色对话：
+```javascript
+// 用户输入：@MBTI专家 请帮我分析性格
+// 系统会将消息发送给MBTI专家AI角色
+```
+
+#### 智能角色分配
+如果用户没有@特定角色，系统会随机选择一个AI角色回复：
+```javascript
+detectTargetAI(content) {
+  const { aiCharacters } = this.data;
+  
+  // 检查是否@了特定角色
+  for (const character of aiCharacters) {
+    if (content.includes(`@${character.name}`)) {
+      return character;
+    }
+  }
+  
+  // 随机选择一个回复
+  const randomIndex = Math.floor(Math.random() * aiCharacters.length);
+  return aiCharacters[randomIndex];
+}
 ```
 
 ### 页面路由配置
 
 主要页面已在 `app.json` 中配置：
 - 主包页面：首页、消息、个人中心
-- 分包页面：搜索、聊天、登录、设置等
+- 分包页面：搜索、聊天、聊天室、登录、设置等
 
 ### 组件使用
 
@@ -276,8 +336,15 @@ const result = await request('/api/endpoint', 'POST', { data });
 - 信息流卡片
 - 快速发布
 
+### 聊天室功能
+- 美观的轮播图聊天室入口
+- 多主题聊天室（金融、娱乐、记事）
+- 群聊模式与多AI角色互动
+- @特定AI角色功能
+- 聊天室成员展示
+
 ### AI聊天
-- 多角色AI助手列表
+- 个人AI助手列表
 - 流式对话界面
 - 打字机效果
 - 智能回复
@@ -342,6 +409,12 @@ npm run lint:fix
 
 ## 🚀 AI功能特色
 
+### 聊天室系统
+- **主题聊天室**：针对不同场景设计的专业聊天室
+- **群聊模式**：一个聊天室内配置多个AI角色，模拟真实群聊体验
+- **智能分配**：用户消息自动分配给合适的AI角色回复
+- **角色切换**：支持@特定AI角色进行精准对话
+
 ### 多角色AI助手
 - **MBTI专家**：专业性格分析和测试指导
 - **职业规划师**：基于性格类型的职业建议
@@ -353,6 +426,7 @@ npm run lint:fix
 - **流式对话**：实时打字效果，自然对话体验
 - **上下文理解**：保持对话连贯性
 - **个性化回复**：根据不同AI角色特点调整回复风格
+- **群聊管理**：聊天室历史记录和状态管理
 - **错误恢复**：网络异常时的优雅降级处理
 
 ---

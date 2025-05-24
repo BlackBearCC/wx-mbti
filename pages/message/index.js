@@ -7,49 +7,80 @@ const AI_CHARACTERS = [
   {
     userId: 'ai_mbti_expert',
     name: 'MBTI专家',
-    avatar: '/static/ai/mbti-expert.png',
+    avatar: '/static/ai/mbti-expert.svg',
     description: '专业的MBTI性格分析师，帮您深入了解自己的性格类型',
     messages: []
   },
   {
     userId: 'ai_career_advisor',
     name: '职业规划师',
-    avatar: '/static/ai/career-advisor.png', 
+    avatar: '/static/ai/career-advisor.svg', 
     description: '根据您的MBTI类型，为您提供专业的职业建议',
     messages: []
   },
   {
     userId: 'ai_relationship_coach',
     name: '情感导师',
-    avatar: '/static/ai/relationship-coach.png',
+    avatar: '/static/ai/relationship-coach.svg',
     description: '基于性格分析，帮您改善人际关系',
     messages: []
   },
   {
     userId: 'ai_study_assistant',
     name: '学习助手', 
-    avatar: '/static/ai/study-assistant.png',
+    avatar: '/static/ai/study-assistant.svg',
     description: '根据您的学习风格，制定个性化学习计划',
     messages: []
   },
   {
     userId: 'ai_life_coach',
     name: '生活顾问',
-    avatar: '/static/ai/life-coach.png',
+    avatar: '/static/ai/life-coach.svg',
     description: '提供生活建议，帮您发挥性格优势',
     messages: []
+  }
+];
+
+// 聊天室配置（模拟从服务端获取）
+const CHAT_ROOMS = [
+  {
+    roomId: 'finance_room',
+    name: '金融投资',
+    description: '专业金融分析，投资理财建议',
+    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    icon: '💰',
+    aiCharacters: ['ai_mbti_expert', 'ai_career_advisor', 'ai_life_coach']
+  },
+  {
+    roomId: 'entertainment_room', 
+    name: '娱乐休闲',
+    description: '轻松聊天，娱乐互动',
+    background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+    icon: '🎮',
+    aiCharacters: ['ai_relationship_coach', 'ai_study_assistant', 'ai_life_coach']
+  },
+  {
+    roomId: 'diary_room',
+    name: '每日记事',
+    description: '记录生活，分享心情',
+    background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+    icon: '📝',
+    aiCharacters: ['ai_mbti_expert', 'ai_relationship_coach', 'ai_study_assistant']
   }
 ];
 
 Page({
   /** 页面的初始数据 */
   data: {
+    chatRooms: [], // 聊天室列表
     messageList: [], // AI角色列表
     loading: true, // 是否正在加载（用于下拉刷新）
+    swiperCurrent: 0, // 轮播图当前索引
   },
 
   /** 生命周期函数--监听页面加载 */
   onLoad(options) {
+    this.getChatRooms();
     this.getMessageList();
   },
 
@@ -61,6 +92,7 @@ Page({
     currentUser = null;
     // 刷新消息列表以更新未读状态
     this.getMessageList();
+    this.updateChatRoomsHistory();
   },
 
   /** 生命周期函数--监听页面隐藏 */
@@ -77,6 +109,30 @@ Page({
 
   /** 用户点击右上角分享 */
   onShareAppMessage() {},
+
+  /** 获取聊天室列表 */
+  getChatRooms() {
+    // 模拟从服务端获取数据
+    setTimeout(() => {
+      this.setData({ 
+        chatRooms: CHAT_ROOMS 
+      });
+      this.updateChatRoomsHistory();
+    }, 100);
+  },
+
+  /** 更新聊天室历史记录 */
+  updateChatRoomsHistory() {
+    const chatRoomsHistory = wx.getStorageSync('chat_rooms_history') || {};
+    const updatedRooms = this.data.chatRooms.map(room => ({
+      ...room,
+      lastMessage: chatRoomsHistory[room.roomId]?.lastMessage || '',
+      lastTime: chatRoomsHistory[room.roomId]?.lastTime || '',
+      unreadCount: chatRoomsHistory[room.roomId]?.unreadCount || 0
+    }));
+    
+    this.setData({ chatRooms: updatedRooms });
+  },
 
   /** 获取AI角色列表 */
   getMessageList() {
@@ -116,6 +172,42 @@ Page({
       index += 1;
     }
     return null;
+  },
+
+  /** 轮播图切换事件 */
+  onSwiperChange(e) {
+    this.setData({
+      swiperCurrent: e.detail.current
+    });
+  },
+
+  /** 进入聊天室 */
+  enterChatRoom(e) {
+    const { roomId } = e.currentTarget.dataset;
+    const room = this.data.chatRooms.find(r => r.roomId === roomId);
+    
+    if (room) {
+      wx.navigateTo({
+        url: `/pages/chat-room/index?roomId=${roomId}&roomName=${encodeURIComponent(room.name)}`
+      });
+      
+      // 更新聊天室访问记录
+      this.updateRoomVisitHistory(roomId);
+    }
+  },
+
+  /** 更新聊天室访问记录 */
+  updateRoomVisitHistory(roomId) {
+    const chatRoomsHistory = wx.getStorageSync('chat_rooms_history') || {};
+    if (!chatRoomsHistory[roomId]) {
+      chatRoomsHistory[roomId] = {
+        visitTime: Date.now(),
+        lastMessage: '',
+        lastTime: '',
+        unreadCount: 0
+      };
+      wx.setStorageSync('chat_rooms_history', chatRoomsHistory);
+    }
   },
 
   /** 打开AI对话页 */
