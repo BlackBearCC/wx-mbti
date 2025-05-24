@@ -1,5 +1,4 @@
 import { chatWithAI } from '~/api/ai';
-import { formatTime } from '../../utils/formatTime';
 
 const app = getApp();
 
@@ -15,25 +14,25 @@ const AI_CHARACTERS = {
     userId: 'ai_career_advisor',
     name: '职业规划师',
     avatar: '/static/ai/career-advisor.svg',
-    description: '根据您的MBTI类型，为您提供专业的职业建议'
+    description: '专业的职业规划建议'
   },
   'ai_relationship_coach': {
     userId: 'ai_relationship_coach',
     name: '情感导师',
     avatar: '/static/ai/relationship-coach.svg',
-    description: '基于性格分析，帮您改善人际关系'
+    description: '人际关系专家'
   },
   'ai_study_assistant': {
     userId: 'ai_study_assistant',
-    name: '学习助手', 
+    name: '学习助手',
     avatar: '/static/ai/study-assistant.svg',
-    description: '根据您的学习风格，制定个性化学习计划'
+    description: '个性化学习指导'
   },
   'ai_life_coach': {
     userId: 'ai_life_coach',
     name: '生活顾问',
     avatar: '/static/ai/life-coach.svg',
-    description: '提供生活建议，帮您发挥性格优势'
+    description: '生活建议专家'
   }
 };
 
