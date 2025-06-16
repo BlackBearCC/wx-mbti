@@ -1,13 +1,15 @@
 export default {
-  isMock: true,
-  baseUrl: '',
+  // 是否使用本地模拟数据
+  isMock: false,
+  // 后端 API 根地址（本地 FastAPI/Swagger: http://localhost:8000）
+  baseUrl: 'http://localhost:8000',
   // AI大模型WebSocket服务地址
-  aiWebSocketUrl: 'wss://your-ai-domain.com/ws/ai',
+  aiWebSocketUrl: 'ws://localhost:8000/ws',
   // 开发环境下的配置
   development: {
-    isMock: true,
-    baseUrl: 'http://localhost:3000',
-    aiWebSocketUrl: 'ws://localhost:8080/ws/ai'
+    isMock: false,
+    baseUrl: 'http://localhost:8000',
+    aiWebSocketUrl: 'ws://localhost:8000/ws'
   },
   // 生产环境配置
   production: {

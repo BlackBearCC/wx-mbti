@@ -1,4 +1,5 @@
 // pages/message/message.js
+import request from '~/api/request';
 const app = getApp();
 let currentUser = null; // 当前打开的聊天用户 { userId, eventChannel }
 
@@ -112,13 +113,18 @@ Page({
 
   /** 获取聊天室列表 */
   getChatRooms() {
-    // 模拟从服务端获取数据
-    setTimeout(() => {
-      this.setData({ 
-        chatRooms: CHAT_ROOMS 
+    // 调用后端接口获取聊天室数据
+    request('/api/rooms?category=all&page=1&pageSize=10')
+      .then((res) => {
+        // 后端返回格式：{ code: 200, data: { rooms: [...] }}
+        const rooms = res?.data?.rooms || res.rooms || [];
+        this.setData({ chatRooms: rooms });
+        this.updateChatRoomsHistory();
+      })
+      .catch((err) => {
+        console.error('获取聊天室列表失败:', err);
+        wx.showToast({ title: '获取聊天室失败', icon: 'none' });
       });
-      this.updateChatRoomsHistory();
-    }, 100);
   },
 
   /** 更新聊天室历史记录 */

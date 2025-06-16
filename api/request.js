@@ -21,12 +21,13 @@ function request(url, method = 'GET', data = {}) {
       header,
       success(res) {
         setTimeout(() => {
-          // HTTP状态码为200才视为成功
-          if (res.code === 200) {
-            resolve(res);
+          const { statusCode, data: responseData } = res;
+          // 只要HTTP状态码为200就认为请求成功，具体业务错误由后端返回的code判断
+          if (statusCode === 200) {
+            resolve(responseData);
           } else {
             // wx.request的特性，只要有响应就会走success回调，所以在这里判断状态，非200的均视为请求失败
-            reject(res);
+            reject(responseData || res);
           }
         }, delay);
       },

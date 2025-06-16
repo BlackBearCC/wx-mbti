@@ -20,14 +20,17 @@ Page({
   // 生命周期
   async onReady() {
     const [cardRes, swiperRes] = await Promise.all([
-      request('/home/cards').then((res) => res.data),
-      request('/home/swipers').then((res) => res.data),
+      request('/home/cards'),
+      request('/home/swipers'),
     ]);
 
+    const cards = cardRes?.data?.cards || [];
+    const swipers = swiperRes?.data?.swipers || [];
+
     this.setData({
-      cardInfo: cardRes.data,
-      focusCardInfo: cardRes.data.slice(0, 3),
-      swiperList: swiperRes.data,
+      cardInfo: cards,
+      focusCardInfo: cards.slice(0, 3),
+      swiperList: swipers,
     });
   },
   onLoad(option) {
@@ -54,15 +57,18 @@ Page({
       enable: true,
     });
     const [cardRes, swiperRes] = await Promise.all([
-      request('/home/cards').then((res) => res.data),
-      request('/home/swipers').then((res) => res.data),
+      request('/home/cards'),
+      request('/home/swipers'),
     ]);
+
+    const cards = cardRes?.data?.cards || [];
+    const swipers = swiperRes?.data?.swipers || [];
 
     setTimeout(() => {
       this.setData({
         enable: false,
-        cardInfo: cardRes.data,
-        swiperList: swiperRes.data,
+        cardInfo: cards,
+        swiperList: swipers,
       });
     }, 1500);
   },

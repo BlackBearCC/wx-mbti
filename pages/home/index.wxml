@@ -18,9 +18,12 @@
             <card
               wx:for="{{cardInfo}}"
               wx:key="index"
-              desc="{{item.desc}}"
-              url="{{item.url}}"
-              tags="{{item.tags}}"
+              icon="{{item.icon}}"
+              title="{{item.title}}"
+              description="{{item.description}}"
+              background="{{item.background}}"
+              roomId="{{item.roomId}}"
+              targetUrl="{{item.targetUrl}}"
             />
           </view>
         </t-pull-down-refresh>
@@ -30,9 +33,12 @@
           <card
             wx:for="{{focusCardInfo}}"
             wx:key="index"
-            desc="{{item.desc}}"
-            url="{{item.url}}"
-            tags="{{item.tags}}"
+            icon="{{item.icon}}"
+            title="{{item.title}}"
+            description="{{item.description}}"
+            background="{{item.background}}"
+            roomId="{{item.roomId}}"
+            targetUrl="{{item.targetUrl}}"
           />
         </view>
       </t-tab-panel>

@@ -27,7 +27,7 @@
         <view wx:else class="message-area">
           <t-avatar image="{{ avatar }}" size="small" />
           <view class="message other {{item.isError ? 'error' : ''}}">
-            <text space="nbsp">{{ item.content }}</text>
+          <text space="nbsp">{{ item.content }}</text>
             <!-- AI打字效果 -->
             <view wx:if="{{ item.isTyping }}" class="typing-indicator">
               <text class="typing-dot"></text>

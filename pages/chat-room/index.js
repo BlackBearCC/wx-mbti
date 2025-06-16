@@ -1,4 +1,5 @@
 import { chatWithAI } from '~/api/ai';
+import request from '~/api/request';
 
 const app = getApp();
 
@@ -36,19 +37,19 @@ const AI_CHARACTERS = {
   }
 };
 
-// 聊天室配置
-const CHAT_ROOMS = {
-  'finance_room': {
+// 本地兜底聊天室配置（接口异常时使用）
+const LOCAL_CHAT_ROOMS = {
+  finance_room: {
     roomId: 'finance_room',
     name: '金融投资',
     aiCharacters: ['ai_mbti_expert', 'ai_career_advisor', 'ai_life_coach']
   },
-  'entertainment_room': {
+  entertainment_room: {
     roomId: 'entertainment_room',
     name: '娱乐休闲',
     aiCharacters: ['ai_relationship_coach', 'ai_study_assistant', 'ai_life_coach']
   },
-  'diary_room': {
+  diary_room: {
     roomId: 'diary_room',
     name: '每日记事',
     aiCharacters: ['ai_mbti_expert', 'ai_relationship_coach', 'ai_study_assistant']
@@ -74,29 +75,57 @@ Page({
 
   /** 生命周期函数--监听页面加载 */
   onLoad(options) {
-    const { roomId, roomName } = options;
-    const room = CHAT_ROOMS[roomId];
-    
-    if (room) {
-      // 获取聊天室内的AI角色
-      const characters = room.aiCharacters.map(id => AI_CHARACTERS[id]).filter(Boolean);
-      
-      this.setData({
-        roomId,
-        roomName: decodeURIComponent(roomName || ''),
-        aiCharacters: characters,
-        conversationId: chatWithAI.startConversation()
+    const { roomId } = options;
+
+    this.setData({ roomId });
+
+    // 先尝试从后端获取聊天室详情
+    request(`/api/rooms/${roomId}`)
+      .then((res) => {
+        const roomInfo = res?.data?.room || res.room || {};
+        const activeCharacters = roomInfo.activeCharacters || [];
+
+        // 如果后端返回AI角色信息, 直接使用; 否则根据本地字典映射
+        const characters = activeCharacters.length
+          ? activeCharacters.map((c) => ({
+              userId: c.characterId || c.userId,
+              name: c.name,
+              avatar: c.avatar,
+            }))
+          : (LOCAL_CHAT_ROOMS[roomId]?.aiCharacters || []).map((id) => AI_CHARACTERS[id]).filter(Boolean);
+
+        this.setData({
+          roomName: roomInfo.name || decodeURIComponent(options.roomName || ''),
+          aiCharacters: characters,
+          conversationId: chatWithAI.startConversation(),
+        });
+
+        // 连接AI服务
+        this.connectAI();
+
+        // 加载聊天记录
+        this.loadChatHistory();
+
+        // 添加欢迎消息
+        this.addWelcomeMessage();
+      })
+      .catch((err) => {
+        console.error('获取聊天室详情失败, 使用本地配置:', err);
+        const fallback = LOCAL_CHAT_ROOMS[roomId];
+        if (fallback) {
+          const characters = fallback.aiCharacters.map((id) => AI_CHARACTERS[id]).filter(Boolean);
+          this.setData({
+            roomName: fallback.name,
+            aiCharacters: characters,
+            conversationId: chatWithAI.startConversation(),
+          });
+          this.connectAI();
+          this.loadChatHistory();
+          this.addWelcomeMessage();
+        } else {
+          wx.showToast({ title: '聊天室不存在', icon: 'none' });
+        }
       });
-      
-      // 连接AI服务
-      this.connectAI();
-      
-      // 加载聊天记录
-      this.loadChatHistory();
-      
-      // 添加欢迎消息
-      this.addWelcomeMessage();
-    }
   },
 
   /** 生命周期函数--监听页面卸载 */
