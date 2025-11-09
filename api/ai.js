@@ -195,29 +195,45 @@ export const chatWithAI = {
 
     // 添加事件监听
     const messageHandler = (data) => {
-      if (data.conversationId === conversationId) {
-        switch (data.type) {
-          case 'message_chunk':
-            onMessage && onMessage(data.content, data.isComplete);
-            break;
-          case 'message_complete':
-            onComplete && onComplete(data.fullContent);
-            break;
-          case 'error':
-            onError && onError(data.error);
-            break;
+      // 适配后端 /service/ws 协议: {reqId, op, event, text}
+      try {
+        const reqId = data && data.reqId;
+        const op = data && data.op;
+        const event = data && data.event;
+        if (reqId !== conversationId) return;
+        if (op === 'ai.stream') {
+          switch (event) {
+            case 'chunk':
+              onMessage && onMessage(String(data.text || ''), false);
+              break;
+            case 'final':
+              // 直接在 final 事件回调完成文本
+              onComplete && onComplete(String(data.text || ''));
+              break;
+            case 'error':
+              onError && onError(String(data.detail || '未知错误'));
+              break;
+            default:
+              break;
+          }
         }
+      } catch (e) {
+        console.error('处理AI流式消息失败:', e);
       }
     };
 
     aiWebSocket.on('message', messageHandler);
 
-    // 发送消息
+    // 发送新协议消息
     aiWebSocket.send({
-      type: 'chat',
-      message: message,
-      conversationId: conversationId,
-      timestamp: Date.now()
+      reqId: conversationId,
+      op: 'ai.stream',
+      data: {
+        modelAlias: 'default',
+        messages: [
+          { role: 'user', content: String(message || '') }
+        ]
+      }
     });
 
     // 返回取消函数
