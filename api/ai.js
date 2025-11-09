@@ -1,4 +1,5 @@
 import config from '~/config';
+import logger from '~/utils/logger';
 
 /**
  * AI大模型WebSocket连接管理类
@@ -28,7 +29,7 @@ class AIWebSocketManager {
         });
 
         this.socket.onOpen(() => {
-          console.log('AI WebSocket连接成功');
+          logger.info('AI WebSocket连接成功');
           this.reconnectAttempts = 0;
           // 发送队列中的消息
           this.processMessageQueue();
@@ -40,17 +41,17 @@ class AIWebSocketManager {
         });
 
         this.socket.onError((error) => {
-          console.error('AI WebSocket连接错误:', error);
+          logger.error('AI WebSocket连接错误', { error: String(error) });
           reject(error);
         });
 
         this.socket.onClose(() => {
-          console.log('AI WebSocket连接关闭');
+          logger.info('AI WebSocket连接关闭');
           this.handleReconnect();
         });
 
       } catch (error) {
-        console.error('创建WebSocket连接失败:', error);
+        logger.error('创建WebSocket连接失败', { error: String(error) });
         reject(error);
       }
     });
@@ -62,15 +63,15 @@ class AIWebSocketManager {
   handleReconnect() {
     if (this.reconnectAttempts < this.maxReconnectAttempts) {
       this.reconnectAttempts++;
-      console.log(`尝试重连 (${this.reconnectAttempts}/${this.maxReconnectAttempts})`);
+      logger.info("尝试重连", { attempt: this.reconnectAttempts, max: this.maxReconnectAttempts });
       
       setTimeout(() => {
         this.connect().catch(error => {
-          console.error('重连失败:', error);
+          logger.error('重连失败', { error: String(error) });
         });
       }, this.reconnectInterval);
     } else {
-      console.error('WebSocket重连次数超限');
+      logger.error('WebSocket重连次数超限');
       this.emit('maxReconnectAttemptsReached');
     }
   }
@@ -115,7 +116,7 @@ class AIWebSocketManager {
         this.emit(message.type, message);
       }
     } catch (error) {
-      console.error('解析消息失败:', error);
+      logger.error('解析消息失败', { error: String(error) });
     }
   }
 
@@ -150,7 +151,7 @@ class AIWebSocketManager {
         try {
           callback(data);
         } catch (error) {
-          console.error('事件回调执行错误:', error);
+          logger.error('事件回调执行错误', { error: String(error) });
         }
       });
     }
@@ -218,7 +219,7 @@ export const chatWithAI = {
           }
         }
       } catch (e) {
-        console.error('处理AI流式消息失败:', e);
+        logger.error('处理AI流式消息失败', { error: String(e) });
       }
     };
 
