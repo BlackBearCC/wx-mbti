@@ -299,6 +299,13 @@ Page({
       // 错误回调
       (error) => {
         this.handleAIError(error, targetAI);
+      },
+      // 新协议参数（可选）：携带角色与房间信息，便于后端路由与埋点
+      {
+        modelAlias: 'default',
+        characterName: targetAI && targetAI.name,
+        characterId: targetAI && targetAI.userId,
+        roomId: this.data.roomId,
       }
     );
   },

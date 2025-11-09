@@ -110,11 +110,8 @@ class AIWebSocketManager {
     try {
       const message = typeof data === 'string' ? JSON.parse(data) : data;
       this.emit('message', message);
-      
-      // 根据消息类型分发
-      if (message.type) {
-        this.emit(message.type, message);
-      }
+      // 新协议事件：按 op:event 触发（例如 'ai.stream:chunk'）
+      if (message.op && message.event) this.emit(`${message.op}:${message.event}`, message);
     } catch (error) {
       logger.error('解析消息失败', { error: String(error) });
     }
@@ -185,7 +182,7 @@ export const chatWithAI = {
    * @param {function} onComplete 完成回调
    * @param {function} onError 错误回调
    */
-  sendMessage(message, conversationId, onMessage, onComplete, onError) {
+  sendMessage(message, conversationId, onMessage, onComplete, onError, options = {}) {
     // 确保连接已建立
     if (!aiWebSocket.socket || aiWebSocket.socket.readyState !== 1) {
       aiWebSocket.connect().then(() => {
@@ -226,16 +223,25 @@ export const chatWithAI = {
     aiWebSocket.on('message', messageHandler);
 
     // 发送新协议消息
-    aiWebSocket.send({
+    const payload = {
       reqId: conversationId,
       op: 'ai.stream',
       data: {
-        modelAlias: 'default',
+        modelAlias: options.modelAlias || 'default',
+        temperature: options.temperature,
+        maxTokens: options.maxTokens,
+        metadata: options.metadata,
+        characterName: options.characterName,
+        characterId: options.characterId,
+        roomId: options.roomId,
+        userId: options.userId,
+        systemPrompt: options.systemPrompt,
         messages: [
           { role: 'user', content: String(message || '') }
         ]
       }
-    });
+    };
+    aiWebSocket.send(payload);
 
     // 返回取消函数
     return () => {
@@ -264,92 +270,4 @@ export const chatWithAI = {
     aiWebSocket.close();
   }
 };
-
-/**
- * MBTI分析API
- */
-export const mbtiAnalysis = {
-  /**
-   * 开始MBTI测试
-   * @param {function} onQuestion 接收问题的回调
-   * @param {function} onComplete 测试完成回调
-   * @param {function} onError 错误回调
-   */
-  startTest(onQuestion, onComplete, onError) {
-    const testId = 'mbti_' + Date.now();
-    
-    const messageHandler = (data) => {
-      if (data.testId === testId) {
-        switch (data.type) {
-          case 'question':
-            onQuestion && onQuestion(data.question, data.questionIndex, data.totalQuestions);
-            break;
-          case 'test_complete':
-            onComplete && onComplete(data.result);
-            break;
-          case 'error':
-            onError && onError(data.error);
-            break;
-        }
-      }
-    };
-
-    aiWebSocket.on('message', messageHandler);
-
-    aiWebSocket.send({
-      type: 'mbti_test',
-      action: 'start',
-      testId: testId
-    });
-
-    return testId;
-  },
-
-  /**
-   * 提交答案
-   * @param {string} testId 测试ID
-   * @param {number} questionIndex 问题索引
-   * @param {string} answer 答案
-   */
-  submitAnswer(testId, questionIndex, answer) {
-    aiWebSocket.send({
-      type: 'mbti_test',
-      action: 'answer',
-      testId: testId,
-      questionIndex: questionIndex,
-      answer: answer
-    });
-  },
-
-  /**
-   * 分析用户行为生成MBTI建议
-   * @param {object} behaviorData 行为数据
-   * @param {function} onResult 结果回调
-   */
-  analyzeBehavior(behaviorData, onResult, onError) {
-    const analysisId = 'analysis_' + Date.now();
-    
-    const messageHandler = (data) => {
-      if (data.analysisId === analysisId) {
-        switch (data.type) {
-          case 'analysis_result':
-            onResult && onResult(data.result);
-            break;
-          case 'error':
-            onError && onError(data.error);
-            break;
-        }
-      }
-    };
-
-    aiWebSocket.on('message', messageHandler);
-
-    aiWebSocket.send({
-      type: 'behavior_analysis',
-      analysisId: analysisId,
-      behaviorData: behaviorData
-    });
-  }
-};
-
-export default { chatWithAI, mbtiAnalysis }; 
+export default { chatWithAI };

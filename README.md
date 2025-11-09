@@ -234,6 +234,13 @@ chatWithAI.sendMessage(
   (error) => {
     // 错误处理
     console.error('AI聊天错误:', error);
+  },
+  // 可选：携带新协议参数，便于后端进行角色/房间路由
+  {
+    modelAlias: 'default',
+    characterName: 'MBTI专家',
+    characterId: 'ai_mbti_expert',
+    roomId: 'diary_room'
   }
 );
 ```

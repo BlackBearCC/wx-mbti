@@ -1,5 +1,5 @@
 // pages/chat/index.js
-import { chatWithAI, mbtiAnalysis } from '~/api/ai';
+import { chatWithAI } from '~/api/ai';
 
 const app = getApp();
 

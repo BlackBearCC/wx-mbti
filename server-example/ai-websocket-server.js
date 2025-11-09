@@ -1,7 +1,10 @@
 /**
- * AI WebSocket服务器示例
- * 这是一个简单的示例，展示如何实现支持流式响应的AI聊天服务
- * 实际使用时，请替换为您的大模型API调用
+ * AI WebSocket服务器示例（对齐后端 /service/ws 网关协议）
+ * 协议：客户端发送 {reqId, op, data}
+ * - op: 'ai.chat' | 'ai.stream' | 'ping' | 'room.join' | 'room.leave' | 'room.typing'
+ * 服务端响应 JSON 帧，带有 event 字段：
+ * - ai.chat: {reqId, op, event: 'result', text, model, usage}
+ * - ai.stream: 'start' -> 多个 'chunk' -> 'final' -> 'done'
  */
 
 const WebSocket = require('ws');
@@ -10,277 +13,154 @@ const http = require('http');
 // 创建HTTP服务器
 const server = http.createServer();
 
-// 创建WebSocket服务器
-const wss = new WebSocket.Server({ 
+// 创建WebSocket服务器（新路径：/service/ws）
+const wss = new WebSocket.Server({
   server,
-  path: '/ws/ai' 
+  path: '/service/ws',
 });
 
-// 模拟AI角色配置
-const AI_CHARACTERS = {
-  'ai_mbti_expert': {
-    name: 'MBTI专家',
-    personality: '专业、耐心、善于分析',
-    expertise: 'MBTI性格分析、心理测试'
-  },
-  'ai_career_advisor': {
-    name: '职业规划师',
-    personality: '专业、务实、目标导向',
-    expertise: '职业规划、技能发展'
-  },
-  'ai_relationship_coach': {
-    name: '情感导师',
-    personality: '温暖、理解、善于倾听',
-    expertise: '人际关系、情感沟通'
-  },
-  'ai_study_assistant': {
-    name: '学习助手',
-    personality: '耐心、系统、鼓励式',
-    expertise: '学习方法、知识总结'
-  },
-  'ai_life_coach': {
-    name: '生活顾问',
-    personality: '积极、平衡、实用',
-    expertise: '生活规划、习惯养成'
-  }
-};
+// 简单的房间/连接注册（演示用）
+const ROOMS = new Map(); // roomId -> Set<ws>
 
-// 存储活跃的连接
-const connections = new Map();
+wss.on('connection', (ws) => {
+  console.log('WS connected');
 
-wss.on('connection', (ws, request) => {
-  console.log('新的WebSocket连接建立');
-  
-  const connectionId = generateId();
-  connections.set(connectionId, ws);
-
-  ws.on('message', async (data) => {
+  ws.on('message', async (raw) => {
+    let envelope;
     try {
-      const message = JSON.parse(data.toString());
-      console.log('收到消息:', message);
+      envelope = JSON.parse(raw.toString());
+    } catch (e) {
+      // 无 reqId 的错误帧
+      safeSend(ws, { op: 'unknown', event: 'error', detail: 'invalid json' });
+      return;
+    }
 
-      switch (message.type) {
-        case 'chat':
-          await handleChatMessage(ws, message);
+    const reqId = envelope.reqId || null;
+    const op = envelope.op || 'unknown';
+    const data = envelope.data || {};
+
+    try {
+      switch (op) {
+        case 'ping': {
+          safeSend(ws, { reqId, op, event: 'pong', t: Date.now() });
           break;
-        case 'mbti_test':
-          await handleMBTITest(ws, message);
+        }
+        case 'room.join': {
+          const roomId = String(data.roomId || 'default');
+          const set = ROOMS.get(roomId) || new Set();
+          set.add(ws);
+          ROOMS.set(roomId, set);
+          safeSend(ws, { reqId, op, event: 'result', roomId });
           break;
-        case 'behavior_analysis':
-          await handleBehaviorAnalysis(ws, message);
+        }
+        case 'room.leave': {
+          const roomId = String(data.roomId || 'default');
+          const set = ROOMS.get(roomId);
+          if (set) {
+            set.delete(ws);
+            if (set.size === 0) ROOMS.delete(roomId);
+          }
+          safeSend(ws, { reqId, op, event: 'result', roomId });
           break;
-        default:
-          console.log('未知消息类型:', message.type);
+        }
+        case 'room.typing': {
+          const roomId = String(data.roomId || 'default');
+          const userId = data.userId || null;
+          broadcast(roomId, { op: 'room.typing', event: 'update', roomId, userId }, ws);
+          safeSend(ws, { reqId, op, event: 'ack', roomId });
+          break;
+        }
+        case 'ai.chat': {
+          const text = await handleAIChatOnce(data);
+          safeSend(ws, { reqId, op, event: 'result', text, model: 'demo-model', usage: { prompt_tokens: 10, completion_tokens: text.length, total_tokens: text.length + 10 } });
+          break;
+        }
+        case 'ai.stream': {
+          const full = await buildAIResponseText(data);
+          // start
+          safeSend(ws, { reqId, op, event: 'start' });
+          for await (const chunk of streamChunks(full, 12)) {
+            safeSend(ws, { reqId, op, event: 'chunk', text: chunk });
+          }
+          // final + done
+          safeSend(ws, { reqId, op, event: 'final', text: full });
+          safeSend(ws, { reqId, op, event: 'done', model: 'demo-model', usage: { completion_tokens: full.length } });
+          break;
+        }
+        default: {
+          safeSend(ws, { reqId, op, event: 'error', detail: 'unsupported op' });
+        }
       }
-    } catch (error) {
-      console.error('处理消息错误:', error);
-      ws.send(JSON.stringify({
-        type: 'error',
-        error: '消息处理失败'
-      }));
+    } catch (e) {
+      safeSend(ws, { reqId, op, event: 'error', detail: String(e && e.message || e) });
     }
   });
 
   ws.on('close', () => {
-    console.log('WebSocket连接关闭');
-    connections.delete(connectionId);
+    // 从所有房间移除
+    for (const [roomId, set] of ROOMS) {
+      if (set.has(ws)) {
+        set.delete(ws);
+        if (set.size === 0) ROOMS.delete(roomId);
+      }
+    }
   });
 
-  ws.on('error', (error) => {
-    console.error('WebSocket错误:', error);
-    connections.delete(connectionId);
+  ws.on('error', (err) => {
+    console.error('WS error:', err);
   });
 });
 
-/**
- * 处理聊天消息
- */
-async function handleChatMessage(ws, message) {
-  const { message: userMessage, conversationId } = message;
-  
-  // 模拟AI思考时间
-  await sleep(500);
-  
-  // 这里应该调用实际的大模型API
-  // 以下是模拟的流式响应
-  const aiResponse = await generateAIResponse(userMessage);
-  
-  // 模拟流式发送
-  await sendStreamingResponse(ws, aiResponse, conversationId);
+// --- Helpers ---
+function safeSend(ws, payload) {
+  try {
+    ws.send(JSON.stringify(payload));
+  } catch (_) {}
 }
 
-/**
- * 处理MBTI测试
- */
-async function handleMBTITest(ws, message) {
-  const { action, testId, questionIndex, answer } = message;
-  
-  if (action === 'start') {
-    // 开始测试，发送第一个问题
-    const question = getMBTIQuestion(0);
-    ws.send(JSON.stringify({
-      type: 'question',
-      testId,
-      question: question.text,
-      options: question.options,
-      questionIndex: 0,
-      totalQuestions: 10
-    }));
-  } else if (action === 'answer') {
-    // 处理答案并发送下一个问题或结果
-    if (questionIndex < 9) {
-      const question = getMBTIQuestion(questionIndex + 1);
-      ws.send(JSON.stringify({
-        type: 'question',
-        testId,
-        question: question.text,
-        options: question.options,
-        questionIndex: questionIndex + 1,
-        totalQuestions: 10
-      }));
-    } else {
-      // 测试完成，返回结果
-      const result = generateMBTIResult();
-      ws.send(JSON.stringify({
-        type: 'test_complete',
-        testId,
-        result
-      }));
-    }
+function broadcast(roomId, payload, exclude) {
+  const set = ROOMS.get(roomId);
+  if (!set) return;
+  for (const peer of set) {
+    if (peer !== exclude) safeSend(peer, payload);
   }
 }
 
-/**
- * 处理行为分析
- */
-async function handleBehaviorAnalysis(ws, message) {
-  const { analysisId, behaviorData } = message;
-  
-  // 模拟分析时间
-  await sleep(1000);
-  
-  const result = {
-    mbtiType: 'ENFP',
-    confidence: 0.85,
-    analysis: '根据您的行为模式分析，您倾向于外向、直觉、情感和知觉型人格...',
-    suggestions: [
-      '发挥您的创造力优势',
-      '注意时间管理',
-      '保持灵活性'
-    ]
-  };
-  
-  ws.send(JSON.stringify({
-    type: 'analysis_result',
-    analysisId,
-    result
-  }));
+async function handleAIChatOnce(data) {
+  const text = await buildAIResponseText(data);
+  return text;
 }
 
-/**
- * 生成AI响应 (这里应该调用实际的大模型API)
- */
-async function generateAIResponse(userMessage) {
-  // 这是一个简单的模拟，实际使用时请替换为真实的AI API调用
-  const responses = [
-    "我理解您的问题。让我为您详细分析一下...",
-    "基于MBTI理论，我们可以从以下几个方面来看待这个问题：",
-    "首先，每个人都有独特的性格特征和优势。",
-    "根据您提到的情况，我建议您可以考虑以下几点：",
-    "1. 了解自己的性格偏好\n2. 发挥个人优势\n3. 改善弱项",
-    "希望这些建议对您有帮助。如果您还有其他问题，随时可以问我！"
+async function buildAIResponseText(data) {
+  // 从 messages 中提取最后一条用户消息
+  const msgs = Array.isArray(data.messages) ? data.messages : [];
+  const lastUser = [...msgs].reverse().find((m) => (m.role || '').toLowerCase() === 'user');
+  const userContent = (lastUser && lastUser.content) ? String(lastUser.content) : '';
+  // 这里可以接入真实 LLM；演示返回固定模板 + 用户问题片段
+  const parts = [
+    '我理解你的问题。以下是基于MBTI视角的要点：',
+    '1) 明确你的性格偏好  2) 用优势对齐目标  3) 针对短板制定改进计划。',
+    userContent ? `你的提问: ${userContent}` : ''
   ];
-  
-  return responses.join(' ');
+  return parts.filter(Boolean).join(' ');
 }
 
-/**
- * 模拟流式发送响应
- */
-async function sendStreamingResponse(ws, fullResponse, conversationId) {
-  const chunks = splitIntoChunks(fullResponse, 10); // 每次发送10个字符
-  
-  for (let i = 0; i < chunks.length; i++) {
-    const chunk = chunks[i];
-    const isComplete = i === chunks.length - 1;
-    
-    ws.send(JSON.stringify({
-      type: 'message_chunk',
-      conversationId,
-      content: chunk,
-      isComplete
-    }));
-    
-    // 模拟打字速度
-    await sleep(100);
+async function* streamChunks(text, chunkSize = 12) {
+  for (let i = 0; i < text.length; i += chunkSize) {
+    yield text.slice(i, i + chunkSize);
+    await sleep(80);
   }
-  
-  // 发送完成信号
-  ws.send(JSON.stringify({
-    type: 'message_complete',
-    conversationId,
-    fullContent: fullResponse
-  }));
-}
-
-/**
- * 获取MBTI测试问题
- */
-function getMBTIQuestion(index) {
-  const questions = [
-    {
-      text: "在聚会中，您更倾向于：",
-      options: ["A. 主动与很多人交谈", "B. 与少数几个人深入交流"]
-    },
-    {
-      text: "在做决定时，您更重视：",
-      options: ["A. 逻辑分析", "B. 个人价值观和感受"]
-    },
-    // ... 更多问题
-  ];
-  
-  return questions[index % questions.length];
-}
-
-/**
- * 生成MBTI结果
- */
-function generateMBTIResult() {
-  return {
-    type: 'ENFP',
-    name: '活动家',
-    description: '热情、创造性、积极向上的人，能够在几乎任何感兴趣的事情上取得成功。',
-    strengths: ['创造力', '热情', '灵活性'],
-    weaknesses: ['注意力分散', '压力敏感'],
-    careers: ['教师', '心理咨询师', '艺术家'],
-    relationships: '善于建立和谐的人际关系，但需要学会坚持自己的原则。'
-  };
-}
-
-/**
- * 工具函数
- */
-function generateId() {
-  return Math.random().toString(36).substr(2, 9);
 }
 
 function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-function splitIntoChunks(text, chunkSize) {
-  const chunks = [];
-  for (let i = 0; i < text.length; i += chunkSize) {
-    chunks.push(text.slice(i, i + chunkSize));
-  }
-  return chunks;
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 // 启动服务器
 const PORT = process.env.PORT || 8080;
 server.listen(PORT, () => {
   console.log(`AI WebSocket服务器启动，端口: ${PORT}`);
-  console.log(`WebSocket地址: ws://localhost:${PORT}/ws/ai`);
+  console.log(`WebSocket地址: ws://localhost:${PORT}/service/ws`);
 });
 
-module.exports = { server, wss }; 
+module.exports = { server, wss };
