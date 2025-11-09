@@ -9,7 +9,7 @@
 - `npm install` — install deps; then open the folder in WeChat Developer Tools and Build npm.
 - `npm run lint` — ESLint + Prettier check.
 - `npm run lint:fix` — auto‑fix ESLint/Prettier issues.
-- Example AI server: `cd server-example && node ai-websocket-server.js` (configure `config.js`).
+- Example AI server: `cd server-example && node ai-websocket-server.js` (see Backend Setup for gateway path).
 
 ## Coding Style & Naming Conventions
 - JavaScript (ES modules) + Less; 2‑space indent, single quotes, semicolons.
@@ -29,3 +29,12 @@
 - Do not commit secrets or private AppIDs; keep credentials out of the repo.
 - Update `project.config.json` `appid` locally; set HTTPS/WebSocket domains in the WeChat console.
 - Runtime endpoints: edit `config.js` (`baseUrl`, `aiWebSocketUrl`, `isMock`).
+
+## Backend Setup & Integration
+- Backend repo: `C:\Users\TYZS\PycharmProjects\wx-mbti-server` (FastAPI).
+- Start locally: `uvicorn app.main:app --reload` or `docker-compose up -d`; run DB migrations if needed: `alembic upgrade head`.
+- Endpoints used by this app:
+  - HTTP: `POST /service/chat` (non-stream), `POST /service/streamchat` (SSE)
+  - WebSocket: `/service/ws` (envelope with `reqId/op/event`)
+- Frontend config: set `config.js` → `baseUrl: 'http://localhost:8000'`, `aiWebSocketUrl: 'ws://localhost:8000/service/ws'`.
+- DevTools whitelist: add `http://localhost:8000` and `ws://localhost:8000`.

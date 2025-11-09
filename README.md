@@ -134,7 +134,7 @@ npm install
 export default {
   isMock: false,
   baseUrl: 'https://your-api-domain.com',
-  aiWebSocketUrl: 'wss://your-ai-domain.com/ws/ai'
+  aiWebSocketUrl: 'wss://your-ai-domain.com/service/ws'
 };
 ```
 
