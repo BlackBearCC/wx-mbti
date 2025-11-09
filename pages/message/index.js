@@ -111,19 +111,28 @@ Page({
   /** 用户点击右上角分享 */
   onShareAppMessage() {},
 
-  /** 获取聊天室列表 */
+  /** 获取聊天室列表（对齐后端：使用 /home/cards 作为房间入口数据） */
   getChatRooms() {
-    // 调用后端接口获取聊天室数据
-    request('/api/rooms?category=all&page=1&pageSize=10')
+    request('/home/cards')
       .then((res) => {
-        // 后端返回格式：{ code: 200, data: { rooms: [...] }}
-        const rooms = res?.data?.rooms || res.rooms || [];
+        const cards = (res && res.data && res.data.cards) || [];
+        // 规范化为本页需要的房间字段
+        const rooms = cards.map((c) => ({
+          roomId: c.roomId || c.id,
+          name: c.title || c.name,
+          description: c.description || '',
+          background: c.background || '',
+          icon: c.icon || '',
+        }));
         this.setData({ chatRooms: rooms });
         this.updateChatRoomsHistory();
       })
       .catch((err) => {
         console.error('获取聊天室列表失败:', err);
-        wx.showToast({ title: '获取聊天室失败', icon: 'none' });
+        // 回退到本地静态配置
+        this.setData({ chatRooms: (Array.isArray(CHAT_ROOMS) ? CHAT_ROOMS : []) });
+        this.updateChatRoomsHistory();
+        wx.showToast({ title: '使用本地聊天室配置', icon: 'none' });
       });
   },
 

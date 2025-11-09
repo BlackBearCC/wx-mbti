@@ -20,13 +20,14 @@ class AIWebSocketManager {
   connect() {
     return new Promise((resolve, reject) => {
       try {
-        this.socket = wx.connectSocket({
+        const token = wx.getStorageSync('access_token');
+        const wsOpts = {
           url: config.aiWebSocketUrl,
-          protocols: ['websocket'],
-          header: {
-            'Authorization': wx.getStorageSync('access_token') || ''
-          }
-        });
+        };
+        if (token) {
+          wsOpts.header = { Authorization: token };
+        }
+        this.socket = wx.connectSocket(wsOpts);
 
         this.socket.onOpen(() => {
           logger.info('AI WebSocket连接成功');
