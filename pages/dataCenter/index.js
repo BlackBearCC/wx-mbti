@@ -5,6 +5,7 @@ Page({
    * 页面的初始数据
    */
   data: {
+    infoIcon: require('~/utils/placeholders').DATA_URI_LOADING,
     totalSituationDataList: null,
     totalSituationKeyList: null,
     completeRateDataList: null,

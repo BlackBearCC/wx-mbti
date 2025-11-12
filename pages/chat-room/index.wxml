@@ -2,7 +2,7 @@
 
 <t-navbar class="nav-bar" title="{{ roomName }}" left-arrow>
   <view slot="right" class="nav-right" bindtap="toggleCharacterList">
-    <t-icon name="user" size="48rpx" />
+    <image style="width:48rpx;height:48rpx" mode="aspectFit" src="{{ iconUser }}" />
   </view>
 </t-navbar>
 
@@ -29,6 +29,8 @@
 </view>
 
 <view class="chat-container">
+  <!-- 背景图 -->
+  <image class="page-bg" mode="aspectFill" src="{{ bgUrl }}" />
   <!-- 聊天室成员展示 -->
   <view class="room-members">
     <view class="members-title">聊天室成员</view>
@@ -81,7 +83,7 @@
         <!-- AI消息 -->
         <view wx:else class="message-area">
           <view class="ai-info">
-            <t-avatar image="{{ item.fromUser ? item.fromUser.avatar : '/static/ai/default-ai.png' }}" size="small" />
+            <t-avatar image="{{ item.fromUser ? item.fromUser.avatar : '' }}" size="small" />
             <text class="ai-name">{{ item.fromUser ? item.fromUser.name : 'AI助手' }}</text>
           </view>
           <view class="message other {{ item.isError ? 'error' : '' }}">

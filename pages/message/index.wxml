@@ -22,13 +22,13 @@
         bindtap="enterChatRoom"
         data-room-id="{{ item.roomId }}"
       >
-        <view class="room-icon">{{ item.icon }}</view>
+        <view class="room-icon">
+          <image mode="aspectFit" style="width:48rpx;height:48rpx" src="{{ item.iconUrl }}" />
+        </view>
         <view class="room-info">
           <view class="room-name">{{ item.name }}</view>
           <view class="room-desc">{{ item.description }}</view>
-          <view class="room-stats">
-            <text class="online-count">{{ item.aiCharacters.length }}个AI助手在线</text>
-          </view>
+          <!-- 后端暂未提供在线AI数量，移除本地统计显示 -->
         </view>
         <view class="enter-btn">进入</view>
       </view>
@@ -54,7 +54,7 @@
     data-user-id="{{ item.userId }}"
   >
     <!-- 头像 -->
-    <image class="avatar" src="{{ item.avatar || '/static/ai/default-ai.png' }}" />
+    <image class="avatar" src="{{ item.avatar }}" />
     
     <!-- 内容区域 -->
     <view class="content">

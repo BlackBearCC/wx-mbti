@@ -44,22 +44,29 @@ Page({
 
   onLoad() {
     this.initAreaData();
-    this.getPersonalInfo();
+    if (wx.getStorageSync('access_token')) {
+      this.getPersonalInfo();
+    }
   },
 
   getPersonalInfo() {
-    request('/api/genPersonalInfo').then((res) => {
-      this.setData(
-        {
-          personInfo: res.data.data,
-        },
-        () => {
-          const { personInfo } = this.data;
-          this.setData({
-            addressText: `${areaList.provinces[personInfo.address[0]]} ${areaList.cities[personInfo.address[1]]}`,
-          });
-        },
-      );
+    request('/api/user/profile').then((res) => {
+      const data = res && res.data ? res.data : {};
+      // 为页面字段做一个简化映射
+      const personInfo = {
+        name: data.nickName || '',
+        gender: typeof data.gender === 'number' ? data.gender : 0,
+        birth: '',
+        address: Array.isArray(data.address) ? data.address : [0, 0],
+        introduction: data.introduction || '',
+        photos: [],
+      };
+      this.setData({ personInfo }, () => {
+        const { personInfo: p } = this.data;
+        this.setData({ addressText: `${areaList.provinces[p.address[0]] || ''} ${areaList.cities[p.address[1]] || ''}` });
+      });
+    }).catch(() => {
+      wx.showToast({ title: '请登录后编辑资料', icon: 'none' });
     });
   },
 

@@ -1,12 +1,15 @@
 // pages/chat/index.js
 import { chatWithAI } from '~/api/ai';
+import config from '~/config';
+import { DATA_URI_LOADING } from '~/utils/placeholders';
 
 const app = getApp();
 
 Page({
   /** 页面的初始数据 */
   data: {
-    myAvatar: '/static/chat/avatar.png', // 自己的头像
+    bgUrl: DATA_URI_LOADING,
+    myAvatar: DATA_URI_LOADING, // 自己的头像（内联占位）
     userId: null, // 对方userId
     avatar: '', // 对方头像
     name: '', // 对方昵称

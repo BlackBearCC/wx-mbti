@@ -51,10 +51,10 @@
     }
   ],
   "window": {
-    "backgroundTextStyle": "light",
-    "navigationBarBackgroundColor": "#fff",
-    "navigationBarTitleText": "Weixin",
-    "navigationBarTextStyle": "black"
+    "backgroundTextStyle": "dark",
+    "navigationBarBackgroundColor": "#1c1f24",
+    "navigationBarTitleText": "MBTI",
+    "navigationBarTextStyle": "white"
   },
   "tabBar": {
     "custom": true,

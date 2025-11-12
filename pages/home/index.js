@@ -1,5 +1,6 @@
 import Message from 'tdesign-miniprogram/message/index';
 import request from '~/api/request';
+import config from '~/config';
 
 // 获取应用实例
 // const app = getApp()
@@ -19,13 +20,26 @@ Page({
   },
   // 生命周期
   async onReady() {
+    const { enforceHttpsAssets } = config;
+    const ensureHttps = (u) => (enforceHttpsAssets && u ? u.replace(/^http:\/\//i, 'https://') : u);
+    const fixBg = (bg) => (enforceHttpsAssets && bg ? bg.replace(/url\(http:\/\//i, 'url(https://') : bg);
     const [cardRes, swiperRes] = await Promise.all([
       request('/home/cards'),
       request('/home/swipers'),
     ]);
 
-    const cards = cardRes?.data?.cards || [];
-    const swipers = swiperRes?.data?.swipers || [];
+    const rawCards = cardRes?.data?.cards || [];
+    const rawSwipers = swiperRes?.data?.swipers || [];
+
+    const cards = rawCards.map((c) => ({
+      ...c,
+      icon: ensureHttps(c.icon),
+      background: fixBg(c.background),
+    }));
+    const swipers = rawSwipers.map((s) => ({
+      ...s,
+      imageUrl: ensureHttps(s.imageUrl),
+    }));
 
     this.setData({
       cardInfo: cards,
@@ -53,6 +67,9 @@ Page({
     this.refresh();
   },
   async refresh() {
+    const { enforceHttpsAssets } = config;
+    const ensureHttps = (u) => (enforceHttpsAssets && u ? u.replace(/^http:\/\//i, 'https://') : u);
+    const fixBg = (bg) => (enforceHttpsAssets && bg ? bg.replace(/url\(http:\/\//i, 'url(https://') : bg);
     this.setData({
       enable: true,
     });
@@ -61,8 +78,10 @@ Page({
       request('/home/swipers'),
     ]);
 
-    const cards = cardRes?.data?.cards || [];
-    const swipers = swiperRes?.data?.swipers || [];
+    const rawCards = cardRes?.data?.cards || [];
+    const rawSwipers = swiperRes?.data?.swipers || [];
+    const cards = rawCards.map((c) => ({ ...c, icon: ensureHttps(c.icon), background: fixBg(c.background) }));
+    const swipers = rawSwipers.map((s) => ({ ...s, imageUrl: ensureHttps(s.imageUrl) }));
 
     setTimeout(() => {
       this.setData({

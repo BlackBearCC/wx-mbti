@@ -47,7 +47,9 @@
       <view class="card-header__title"> 按区域统计 </view>
     </view>
     <view class="card-content">
-      <t-empty icon="info-circle-filled" description="Empty Data" />
+      <t-empty description="Empty Data">
+        <image slot="image" style="width:64rpx;height:64rpx" mode="aspectFit" src="{{ infoIcon }}" />
+      </t-empty>
     </view>
   </view>
 </view>

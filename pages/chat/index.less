@@ -1,20 +1,37 @@
 /* pages/chat/index.wxss */
+@import '/variable.less';
+
 .chat-container {
+  position: relative;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
   height: 100vh;
   font-size: 32rpx;
-  background-color: #fff;
+  background-color: transparent;
+}
+
+.page-bg {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
 }
 
 .nav-bar {
-  border-bottom: 1rpx solid #e7e7e7;
+  border-bottom: 1rpx solid rgba(249, 211, 66, 0.2);
+  color: @text-color-yellow;
 }
 
 .content {
   height: 0;
   flex-grow: 1;
+  position: relative;
+  z-index: 1;
 }
 
 .messages {
@@ -22,6 +39,7 @@
   flex-direction: column;
   gap: 32rpx;
   padding: 32rpx 24rpx;
+  color: @text-color-yellow;
 }
 
 .time {
@@ -29,7 +47,7 @@
   justify-content: center;
   align-items: flex-end;
   height: 56rpx;
-  color: #00000066;
+  color: @text-color-yellow-muted;
   font-size: 24rpx;
   line-height: 40rpx;
 }
@@ -47,24 +65,25 @@
   padding: 24rpx;
   font-size: 28rpx;
   line-height: 44rpx;
+  color: @text-color-yellow;
 }
 
 .message.self {
   border-radius: 24rpx 0 24rpx 24rpx;
   margin-left: auto;
-  background-color: #d9e1ff;
+  background-color: #464d5b;
 }
 
 .message.other {
   border-radius: 0 24rpx 24rpx 24rpx;
-  background-color: #f3f3f3;
+  background-color: @surface-color;
 }
 
 /* AI错误消息样式 */
 .message.other.error {
-  background-color: #ffebee;
-  border: 1rpx solid #ffcdd2;
-  color: #c62828;
+  background-color: #5a2a2a;
+  border: 1rpx solid #f68d8d;
+  color: @text-color-yellow;
 }
 
 /* AI打字效果 */
@@ -79,7 +98,7 @@
   width: 8rpx;
   height: 8rpx;
   border-radius: 50%;
-  background-color: #999;
+  background-color: @text-color-yellow-muted;
   animation: typing-animation 1.4s infinite ease-in-out;
 }
 
@@ -122,13 +141,14 @@
   left: 0;
   right: 0;
   bottom: 0;
+  z-index: 2;
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 24rpx;
   padding: 24rpx 24rpx calc(env(safe-area-inset-bottom) + 24rpx);
-  border-top: 1rpx solid #e7e7e7;
-  background-color: #ffffff;
+  border-top: 1rpx solid rgba(249, 211, 66, 0.08);
+  background-color: @surface-color;
 }
 
 .input {
@@ -137,9 +157,10 @@
   height: 80rpx;
   padding: 16rpx 32rpx;
   border-radius: 40rpx;
-  border: 1rpx solid #dcdcdc;
-  background: #f3f3f3;
+  border: 1rpx solid rgba(249, 211, 66, 0.24);
+  background: #2f3440;
   line-height: 48rpx;
+  color: @text-color-yellow;
 }
 
 .input > input {
@@ -147,12 +168,13 @@
   height: 48rpx;
   line-height: 48rpx;
   margin-bottom: 40rpx;
+  color: @text-color-yellow;
 }
 
 /* 输入框禁用状态 */
 .input > input:disabled {
-  background-color: #f8f8f8;
-  color: #999;
+  background-color: #3a3f4d;
+  color: rgba(249, 211, 66, 0.5);
 }
 
 .send {
@@ -163,6 +185,6 @@
 
 /* 发送按钮禁用状态 */
 .send:disabled {
-  background-color: #e0e0e0 !important;
-  color: #999 !important;
+  background-color: rgba(249, 211, 66, 0.12) !important;
+  color: rgba(249, 211, 66, 0.5) !important;
 }

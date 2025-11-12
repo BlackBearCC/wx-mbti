@@ -2,6 +2,7 @@ import request from '~/api/request';
 
 Page({
   data: {
+    deleteIcon: require('~/utils/placeholders').DATA_URI_LOADING,
     historyWords: [],
     popularWords: [],
     searchValue: '',

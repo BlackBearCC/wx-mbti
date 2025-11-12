@@ -1,7 +1,7 @@
 import config from '~/config';
 
 const { baseUrl } = config;
-const delay = config.isMock ? 500 : 0;
+const delay = 0;
 function request(url, method = 'GET', data = {}) {
   const header = {
     'content-type': 'application/json',
@@ -10,7 +10,7 @@ function request(url, method = 'GET', data = {}) {
   // 获取token，有就丢进请求头
   const tokenString = wx.getStorageSync('access_token');
   if (tokenString) {
-    header.Authorization = `Bearer ${tokenString}`;
+    header.Authorization = tokenString.startsWith('Bearer ') ? tokenString : `Bearer ${tokenString}`;
   }
   return new Promise((resolve, reject) => {
     wx.request({

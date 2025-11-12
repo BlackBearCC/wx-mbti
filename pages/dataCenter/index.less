@@ -1,3 +1,5 @@
+@import '/variable.less';
+
 .card {
   display: inline-flex;
   flex-direction: column;
@@ -6,7 +8,7 @@
   width: 100%;
   padding: 24rpx 32rpx 32rpx 32rpx;
   box-sizing: border-box;
-  background-color: #fff;
+  background-color: @surface-color;
 
   .card-header {
     width: 100%;
@@ -14,14 +16,14 @@
     justify-content: space-between;
 
     &__title {
-      color: rgba(0, 0, 0, 0.9);
+      color: @text-color-yellow;
       font-size: 32rpx;
       font-weight: 600;
       line-height: 48rpx;
     }
 
     &__desc {
-      color: rgba(0, 0, 0, 0.4);
+      color: @text-color-yellow-muted;
       font-size: 24rpx;
       line-height: 40rpx;
     }
@@ -40,7 +42,7 @@
       flex: 1 0 0;
 
       &--desc {
-        color: rgba(0, 0, 0, 0.4);
+        color: @text-color-yellow-muted;
         font-size: 24rpx;
         line-height: 40rpx;
       }
@@ -59,7 +61,7 @@
     &__item {
       &:first-child {
         .card-content__item--count {
-          color: #0052d9;
+          color: @text-color-yellow;
         }
       }
     }
@@ -95,7 +97,7 @@
 
   .unit {
     margin-left: 4rpx;
-    color: rgba(0, 0, 0, 0.6);
+    color: @text-color-yellow-muted;
     font-size: 20rpx;
     font-weight: 400;
     line-height: 32rpx;

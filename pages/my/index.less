@@ -1,3 +1,5 @@
+@import '/variable.less';
+
 .my {
   height: calc(100vh - 56px);
   overflow-y: auto;
@@ -13,7 +15,8 @@
   &-info,
   &-service,
   &-setting {
-    background-color: #fff;
+    background-color: @surface-color;
+    color: @text-color-yellow;
   }
 
   &-info {
@@ -45,7 +48,7 @@
     }
 
     .split-line {
-      border-right: 1px solid #e7e7e7;
+      border-right: 1px solid rgba(249, 211, 66, 0.1);
     }
 
     // 头像margin-right
@@ -55,7 +58,7 @@
       .name {
         line-height: 48rpx;
         font-size: 32rpx;
-        color: #000000e6;
+        color: @text-color-yellow;
         font-weight: 600;
       }
 
@@ -63,7 +66,7 @@
         display: flex;
         margin-top: 16rpx;
 
-        --td-text-color-primary: #000000e6;
+        --td-text-color-primary: @text-color-yellow;
         --td-tag-medium-font-size: 20rpx;
         --td-tag-medium-icon-size: 24rpx;
       }
@@ -94,7 +97,7 @@
       line-height: 44rpx;
       padding-left: 40rpx;
       margin-top: 32rpx;
-      color: #000000e6;
+      color: @text-color-yellow;
       font-size: 28rpx;
       font-weight: 600;
     }

@@ -3,6 +3,7 @@ import useToastBehavior from '~/behaviors/useToast';
 Page({
   behaviors: [useToastBehavior],
   data: {
+    menuIcon: require('~/utils/placeholders').DATA_URI_LOADING,
     menuData: [
       [
         {

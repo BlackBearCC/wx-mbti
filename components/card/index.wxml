@@ -3,7 +3,9 @@
   style="background: {{background}};"
   bindtap="handleTap"
 >
-  <view class="home-card__icon">{{icon}}</view>
+  <view class="home-card__icon">
+    <image wx:if="{{icon}}" mode="aspectFit" style="width:48rpx;height:48rpx" src="{{icon}}" />
+  </view>
   <view class="home-card__info">
     <view class="home-card__title">{{title}}</view>
     <view class="home-card__desc">{{description}}</view>

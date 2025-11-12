@@ -1,85 +1,70 @@
 import request from '~/api/request';
+import { DATA_URI_LOADING } from '~/utils/placeholders';
+
+function getUserProfileSafe() {
+  return new Promise((resolve) => {
+    if (wx.getUserProfile) {
+      wx.getUserProfile({ desc: '用于完善会员资料' })
+        .then((res) => {
+          const userInfo = res.userInfo || {};
+          resolve({
+            nickName: userInfo.nickName || 'WeChat User',
+            avatarUrl: userInfo.avatarUrl || DATA_URI_LOADING,
+            gender: userInfo.gender || 0,
+            country: userInfo.country || '',
+            province: userInfo.province || '',
+            city: userInfo.city || '',
+          });
+        })
+        .catch(() => resolve({
+          nickName: 'WeChat User',
+          avatarUrl: DATA_URI_LOADING,
+          gender: 0, country: '', province: '', city: ''
+        }));
+    } else {
+      resolve({
+        nickName: 'WeChat User',
+        avatarUrl: DATA_URI_LOADING,
+        gender: 0, country: '', province: '', city: ''
+      });
+    }
+  });
+}
 
 Page({
   data: {
-    phoneNumber: '',
-    isPhoneNumber: false,
     isCheck: false,
-    isSubmit: false,
-    isPasswordLogin: false,
-    passwordInfo: {
-      account: '',
-      password: '',
-    },
-    radioValue: '',
-  },
-
-  /* 自定义功能函数 */
-  changeSubmit() {
-    if (this.data.isPasswordLogin) {
-      if (this.data.passwordInfo.account !== '' && this.data.passwordInfo.password !== '' && this.data.isCheck) {
-        this.setData({ isSubmit: true });
-      } else {
-        this.setData({ isSubmit: false });
-      }
-    } else if (this.data.isPhoneNumber && this.data.isCheck) {
-      this.setData({ isSubmit: true });
-    } else {
-      this.setData({ isSubmit: false });
-    }
-  },
-
-  // 手机号变更
-  onPhoneInput(e) {
-    const isPhoneNumber = /^[1][3,4,5,7,8,9][0-9]{9}$/.test(e.detail.value);
-    this.setData({
-      isPhoneNumber,
-      phoneNumber: e.detail.value,
-    });
-    this.changeSubmit();
   },
 
   // 用户协议选择变更
   onCheckChange(e) {
     const { value } = e.detail;
-    this.setData({
-      radioValue: value,
-      isCheck: value === 'agree',
-    });
-    this.changeSubmit();
+    this.setData({ isCheck: value === 'agree' });
   },
 
-  onAccountChange(e) {
-    this.setData({ passwordInfo: { ...this.data.passwordInfo, account: e.detail.value } });
-    this.changeSubmit();
-  },
-
-  onPasswordChange(e) {
-    this.setData({ passwordInfo: { ...this.data.passwordInfo, password: e.detail.value } });
-    this.changeSubmit();
-  },
-
-  // 切换登录方式
-  changeLogin() {
-    this.setData({ isPasswordLogin: !this.data.isPasswordLogin, isSubmit: false });
-  },
-
-  async login() {
-    if (this.data.isPasswordLogin) {
-      const res = await request('/login/postPasswordLogin', 'post', { data: this.data.passwordInfo });
-      if (res.success) {
-        await wx.setStorageSync('access_token', res.data.token);
-        wx.switchTab({
-          url: `/pages/my/index`,
-        });
-      }
-    } else {
-      const res = await request('/login/getSendMessage', 'get');
-      if (res.success) {
-        wx.navigateTo({
-          url: `/pages/loginCode/loginCode?phoneNumber=${this.data.phoneNumber}`,
-        });
-      }
+  async wechatLogin() {
+    if (!this.data.isCheck) {
+      wx.showToast({ title: '请先同意协议条款', icon: 'none' });
+      return;
+    }
+    try {
+      const loginRes = await wx.login();
+      const code = loginRes.code;
+      if (!code) throw new Error('未获取到登录 code');
+      const profile = await getUserProfileSafe();
+      const payload = { code, ...profile };
+      const res = await request('/api/auth/wxlogin', 'POST', payload);
+      const token = res && res.data && res.data.token;
+      if (!token) throw new Error('登录失败');
+      await wx.setStorageSync('access_token', token);
+      try {
+        const app = getApp();
+        app && app.eventBus && app.eventBus.emit && app.eventBus.emit('auth:login', { token });
+      } catch (_) {}
+      wx.switchTab({ url: '/pages/my/index' });
+    } catch (e) {
+      wx.showToast({ title: '登录失败，请重试', icon: 'none' });
+      console.error('微信登录失败:', e);
     }
   },
 });

@@ -3,6 +3,8 @@
 <t-navbar class="nav-bar" title="{{ name }}" left-arrow />
 
 <view class="chat-container">
+  <!-- 背景图 -->
+  <image class="page-bg" mode="aspectFill" src="{{ bgUrl }}" />
   <scroll-view class="content" scroll-y scroll-into-view="{{ anchor }}">
     <view class="messages">
       <block wx:for="{{ messages }}" wx:key="index">

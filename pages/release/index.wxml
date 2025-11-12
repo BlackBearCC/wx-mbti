@@ -16,11 +16,11 @@
       </t-cell>
     </view>
     <view class="location box">
-      <t-cell title="所在位置" hover arrow leftIcon="location" bindtap="gotoMap" />
+      <t-cell title="所在位置" hover arrow bindtap="gotoMap" />
     </view>
     <view class="btngroup box">
-      <t-button t-class="btn-class" theme="light" icon="file-copy" content="存草稿" size="large" bindtap="saveDraft"></t-button>
-      <t-button t-class="btn-class" theme="primary" icon="upload" content="发布" size="large" bindtap="release"></t-button>
+      <t-button t-class="btn-class" theme="light" content="存草稿" size="large" bindtap="saveDraft"></t-button>
+      <t-button t-class="btn-class" theme="primary" content="发布" size="large" bindtap="release"></t-button>
     </view>
   </view>
 </view>

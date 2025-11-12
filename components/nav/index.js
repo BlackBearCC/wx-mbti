@@ -11,6 +11,7 @@ Component({
   },
   data: {
     visible: false,
+    menuIcon: require('~/utils/placeholders').DATA_URI_LOADING,
     sidebar: [
       {
         title: '首页',

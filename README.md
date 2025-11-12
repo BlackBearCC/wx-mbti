@@ -69,11 +69,6 @@ wx-mbti/
 │   └── nav/              # 导航组件
 ├── config/               # 配置文件
 ├── custom-tab-bar/       # 自定义标签栏
-├── mock/                 # Mock数据
-│   ├── chat.js          # 聊天数据
-│   ├── index.js         # Mock入口
-│   ├── mock.js          # 主要Mock数据
-│   └── request.js       # Mock请求
 ├── pages/                # 页面文件
 │   ├── chat/            # 单人AI聊天页面
 │   ├── chat-room/       # 聊天室页面（多AI群聊）
@@ -87,8 +82,7 @@ wx-mbti/
 │   ├── release/         # 发布页面
 │   ├── search/          # 搜索页面
 │   └── setting/         # 设置页面
-├── server-example/       # 后端服务器示例
-│   └── ai-websocket-server.js  # AI WebSocket服务器
+├── (后端服务请见独立仓库 wx-mbti-server)
 ├── static/               # 静态资源
 ├── utils/                # 工具函数
 ├── app.js               # 小程序入口文件
@@ -132,7 +126,6 @@ npm install
 编辑 `config.js` 文件，配置您的AI WebSocket服务地址：
 ```javascript
 export default {
-  isMock: false,
   baseUrl: 'https://your-api-domain.com',
   aiWebSocketUrl: 'wss://your-ai-domain.com/service/ws'
 };
@@ -145,31 +138,11 @@ export default {
 - 构建npm包
 - 开始开发
 
-### AI服务部署
+### AI服务
 
-项目提供了完整的AI WebSocket服务器示例 (`server-example/ai-websocket-server.js`)：
-
-1. **安装服务器依赖**
-```bash
-cd server-example
-npm install ws
-```
-
-2. **启动AI服务**
-```bash
-node ai-websocket-server.js
-```
-
-3. **集成大模型**
-在 `generateAIResponse` 函数中集成您的大模型API：
-```javascript
-async function generateAIResponse(userMessage) {
-  // 调用您的大模型API
-  // 例如：OpenAI GPT、百度文心一言、阿里通义千问等
-  const response = await callLLMAPI(userMessage);
-  return response;
-}
-```
+后端服务与网关协议由 wx-mbti-server 提供：
+- HTTP：`POST /service/chat`、`POST /service/streamchat`
+- WebSocket：`/service/ws`
 
 ### 项目配置
 
@@ -252,7 +225,7 @@ const AI_CHARACTERS = [
   {
     userId: 'ai_custom',
     name: '自定义AI',
-    avatar: '/static/ai/custom.png',
+    avatar: 'https://tdesign.gtimg.com/miniprogram/images/avatar1.png',
     description: '您的专属AI助手',
     messages: []
   }
@@ -312,11 +285,9 @@ import request from '~/api/request';
 const result = await request('/api/endpoint', 'POST', { data });
 ```
 
-### Mock数据
+### Mock
 
-开发阶段可使用Mock数据：
-1. 设置 `config.js` 中 `isMock: true`
-2. 在 `mock/` 目录下添加对应的Mock数据
+本项目已移除本地 Mock 方案，请直接对接后端接口进行联调。
 
 ## 🎨 自定义主题
 

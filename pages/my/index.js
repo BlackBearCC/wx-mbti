@@ -8,6 +8,9 @@ Page({
     isLoad: false,
     service: [],
     personalInfo: {},
+    avatarIcon: require('~/utils/placeholders').DATA_URI_LOADING,
+    editIcon: require('~/utils/placeholders').DATA_URI_LOADING,
+    loadingIcon: require('~/utils/placeholders').DATA_URI_LOADING,
     gridList: [
       {
         name: '全部发布',
@@ -41,32 +44,38 @@ Page({
     ],
   },
 
-  onLoad() {
-    this.getServiceList();
-  },
+  onLoad() {},
 
   async onShow() {
     const Token = wx.getStorageSync('access_token');
-    const personalInfo = await this.getPersonalInfo();
-
-    if (Token) {
-      this.setData({
-        isLoad: true,
-        personalInfo,
-      });
+    // 未登录则直接进入微信登录授权页，不展示“我的”页面
+    if (!Token) {
+      wx.navigateTo({ url: '/pages/login/login' });
+      return;
     }
-  },
-
-  getServiceList() {
-    request('/api/getServiceList').then((res) => {
-      const { service } = res.data.data;
-      this.setData({ service });
+    const personalInfo = await this.getPersonalInfo();
+    this.setData({
+      isLoad: true,
+      personalInfo,
     });
   },
 
+  // 保险起见，拦截 Tab 点击行为（部分端上更早触发）
+  onTabItemTap() {
+    if (!wx.getStorageSync('access_token')) {
+      wx.navigateTo({ url: '/pages/login/login' });
+    }
+  },
+
+  getServiceList() {},
+
   async getPersonalInfo() {
-    const info = await request('/api/genPersonalInfo').then((res) => res.data.data);
-    return info;
+    try {
+      const res = await request('/api/user/profile');
+      return res && res.data ? res.data : {};
+    } catch (e) {
+      return {};
+    }
   },
 
   onLogin(e) {

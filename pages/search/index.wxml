@@ -5,7 +5,6 @@
       t-class-input-container="t-class__input-container"
       t-class-input="t-search__input"
       value="{{searchValue}}"
-      leftIcon="search"
       action="取消"
       shape="round"
       placeholder="请搜索你想要的内容"
@@ -18,7 +17,7 @@
     <view class="history-wrap">
       <view class="search-header">
         <text class="search-title">历史记录</text>
-        <t-icon name="delete" size="large" class="search-clear" bind:click="handleClearHistory" />
+        <image class="search-clear" style="width:40rpx;height:40rpx" mode="aspectFit" src="{{ deleteIcon }}" bindtap="handleClearHistory" />
       </view>
       <view class="search-content">
         <view
@@ -47,7 +46,7 @@
           data-index="{{index}}"
           wx:key="*this"
         >
-          <t-tag class="popular-item margin-12" max-width="{{343}}" variant="light" icon="search"> {{item}} </t-tag>
+          <t-tag class="popular-item margin-12" max-width="{{343}}" variant="light"> {{item}} </t-tag>
         </view>
       </view>
     </view>

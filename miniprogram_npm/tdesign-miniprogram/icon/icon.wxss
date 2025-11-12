@@ -27,9 +27,7 @@
 }
 @font-face {
   font-family: t;
-  /* NOTE: Avoid remote font loading in DevTools / mini-program. If you need icons,
-     consider embedding base64 fonts (see README) or vendor fonts locally.
-     The following line disables external font URLs to prevent network errors. */
+  /* Disabled external icon fonts to avoid network errors in DevTools; use inline SVG placeholders in pages. */
   /* src: url('https://tdesign.gtimg.com/icon/0.3.1/fonts/t.eot'), url('https://tdesign.gtimg.com/icon/0.3.1/fonts/t.eot?#iefix') format('ded-opentype'), url('https://tdesign.gtimg.com/icon/0.3.1/fonts/t.woff') format('woff'), url('https://tdesign.gtimg.com/icon/0.3.1/fonts/t.ttf') format('truetype'), url('https://tdesign.gtimg.com/icon/0.3.1/fonts/t.svg') format('svg'); */
   /* iOS 4.1- */
   font-weight: normal;

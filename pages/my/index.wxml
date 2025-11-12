@@ -1,20 +1,20 @@
 <t-toast id="t-toast" />
 
 <view class="my">
-  <image class="nav-bg" src="/static/bg_navbar.png" />
+  <image class="nav-bg" src="{{ loadingIcon }}" />
   <nav title-text="我的" />
   <view class="my-info">
     <t-cell-group>
       <t-cell wx:if="{{isLoad}}" bordered="{{false}}">
-        <t-avatar image="{{personalInfo.image}}" slot="left-icon" size="large" />
+        <image slot="left-icon" style="width:96rpx;height:96rpx" mode="aspectFit" src="{{ personalInfo.image || avatarIcon }}" />
         <view class="my-info__person" slot="description">
           <view class="name">{{personalInfo.name}}</view>
           <view class="tags">
-            <t-tag class="tag" variant="light" icon="discount">{{personalInfo.star}}</t-tag>
-            <t-tag class="tag" variant="light" icon="location">{{personalInfo.city}}</t-tag>
+            <t-tag class="tag" variant="light">{{personalInfo.star}}</t-tag>
+            <t-tag class="tag" variant="light">{{personalInfo.city}}</t-tag>
           </view>
         </view>
-        <t-icon slot="right-icon" name="edit" size="40rpx" color="#000000e6" bindtap="onNavigateTo" />
+        <image slot="right-icon" style="width:40rpx;height:40rpx" mode="aspectFit" src="{{ editIcon }}" bindtap="onNavigateTo" />
       </t-cell>
       <t-cell
         wx:if="{{!isLoad}}"
@@ -24,7 +24,7 @@
         t-class-center="cell-class-center"
         bindtap="onLogin"
       >
-        <t-avatar slot="left-icon" icon="user" size="128rpx" />
+        <image slot="left-icon" style="width:128rpx;height:128rpx" mode="aspectFit" src="{{ avatarIcon }}" />
       </t-cell>
     </t-cell-group>
     <t-divider t-class="divider-class" />
@@ -34,7 +34,7 @@
         wx:for-item="gridItem"
         wx:key="type"
         text="{{gridItem.name}}"
-        icon="{{gridItem.icon}}"
+        image="{{menuIcon}}"
         class="grid-item {{gridItem.type === 'all' ? 'split-line' : ''}}"
         data-data="{{gridItem}}"
         bindclick="onEleClick"
@@ -65,7 +65,6 @@
       wx:key="type"
       title="{{item.name}}"
       url="{{item.url}}"
-      leftIcon="{{item.icon}}"
       hover
       arrow
       data-data="{{item}}"

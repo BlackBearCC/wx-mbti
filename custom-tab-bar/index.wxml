@@ -1,5 +1,21 @@
-<t-tab-bar value="{{ value }}" theme="tag" split="{{ false }}" bind:change="handleChange">
-  <t-tab-bar-item icon="home" value="home">首页</t-tab-bar-item>
-  <t-tab-bar-item icon="chat" value="message" badge-props="{{ { count: unreadNum } }}">消息</t-tab-bar-item>
-  <t-tab-bar-item icon="user" value="my">我的</t-tab-bar-item>
-</t-tab-bar>
+<view class="custom-tab-bar">
+  <t-tab-bar 
+    value="{{ value }}" 
+    theme="tag" 
+    split="{{ false }}" 
+    bind:change="handleChange"
+  >
+    <t-tab-bar-item value="home">
+      <image slot="icon" style="width:44rpx;height:44rpx" mode="aspectFit" src="{{ homeIcon }}" />
+      首页
+    </t-tab-bar-item>
+    <t-tab-bar-item value="message" badge-props="{{ { count: unreadNum } }}">
+      <image slot="icon" style="width:44rpx;height:44rpx" mode="aspectFit" src="{{ chatIcon }}" />
+      消息
+    </t-tab-bar-item>
+    <t-tab-bar-item value="my">
+      <image slot="icon" style="width:44rpx;height:44rpx" mode="aspectFit" src="{{ userIcon }}" />
+      我的
+    </t-tab-bar-item>
+  </t-tab-bar>
+</view>

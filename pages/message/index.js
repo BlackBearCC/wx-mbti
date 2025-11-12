@@ -3,72 +3,30 @@ import request from '~/api/request';
 const app = getApp();
 let currentUser = null; // 当前打开的聊天用户 { userId, eventChannel }
 
-// AI角色配置
-const AI_CHARACTERS = [
-  {
-    userId: 'ai_mbti_expert',
-    name: 'MBTI专家',
-    avatar: '/static/ai/mbti-expert.svg',
-    description: '专业的MBTI性格分析师，帮您深入了解自己的性格类型',
-    messages: []
-  },
-  {
-    userId: 'ai_career_advisor',
-    name: '职业规划师',
-    avatar: '/static/ai/career-advisor.svg', 
-    description: '根据您的MBTI类型，为您提供专业的职业建议',
-    messages: []
-  },
-  {
-    userId: 'ai_relationship_coach',
-    name: '情感导师',
-    avatar: '/static/ai/relationship-coach.svg',
-    description: '基于性格分析，帮您改善人际关系',
-    messages: []
-  },
-  {
-    userId: 'ai_study_assistant',
-    name: '学习助手', 
-    avatar: '/static/ai/study-assistant.svg',
-    description: '根据您的学习风格，制定个性化学习计划',
-    messages: []
-  },
-  {
-    userId: 'ai_life_coach',
-    name: '生活顾问',
-    avatar: '/static/ai/life-coach.svg',
-    description: '提供生活建议，帮您发挥性格优势',
-    messages: []
-  }
-];
+// 禁止使用本地 AI 角色配置，统一从后端获取
+import config from '~/config';
+import { DATA_URI_LOADING } from '~/utils/placeholders';
+function toAbsUrl(path) {
+  if (!path) return '';
+  if (/^https?:\/\//i.test(path)) return path;
+  return `${config.baseUrl}${path.startsWith('/') ? '' : '/'}${path}`;
+}
 
-// 聊天室配置（模拟从服务端获取）
-const CHAT_ROOMS = [
-  {
-    roomId: 'finance_room',
-    name: '金融投资',
-    description: '专业金融分析，投资理财建议',
-    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-    icon: '💰',
-    aiCharacters: ['ai_mbti_expert', 'ai_career_advisor', 'ai_life_coach']
-  },
-  {
-    roomId: 'entertainment_room', 
-    name: '娱乐休闲',
-    description: '轻松聊天，娱乐互动',
-    background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-    icon: '🎮',
-    aiCharacters: ['ai_relationship_coach', 'ai_study_assistant', 'ai_life_coach']
-  },
-  {
-    roomId: 'diary_room',
-    name: '每日记事',
-    description: '记录生活，分享心情',
-    background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-    icon: '📝',
-    aiCharacters: ['ai_mbti_expert', 'ai_relationship_coach', 'ai_study_assistant']
-  }
-];
+function withDefaultAvatar(url) {
+  const abs = toAbsUrl(url);
+  return abs || DATA_URI_LOADING;
+}
+
+// 统一强制转为 HTTPS（小程序 image 禁止 http）
+function ensureHttps(u) {
+  if (!u) return u;
+  const { enforceHttpsAssets } = config;
+  return enforceHttpsAssets ? u.replace(/^http:\/\//i, 'https://') : u;
+}
+
+// 图标策略：统一使用内联 Loading 图占位，彻底移除本地静态资源依赖
+
+// 禁止使用本地房间配置，统一从后端获取
 
 Page({
   /** 页面的初始数据 */
@@ -82,7 +40,15 @@ Page({
   /** 生命周期函数--监听页面加载 */
   onLoad(options) {
     this.getChatRooms();
-    this.getMessageList();
+    if (wx.getStorageSync('access_token')) {
+      this.getMessageList();
+    }
+    // 监听登录成功事件，刷新 AI 列表
+    try {
+      const app = getApp();
+      this.__onAuthLogin = () => this.getMessageList();
+      app && app.eventBus && app.eventBus.on && app.eventBus.on('auth:login', this.__onAuthLogin);
+    } catch (_) {}
   },
 
   /** 生命周期函数--监听页面初次渲染完成 */
@@ -92,7 +58,9 @@ Page({
   onShow() {
     currentUser = null;
     // 刷新消息列表以更新未读状态
-    this.getMessageList();
+    if (wx.getStorageSync('access_token')) {
+      this.getMessageList();
+    }
     this.updateChatRoomsHistory();
   },
 
@@ -100,7 +68,12 @@ Page({
   onHide() {},
 
   /** 生命周期函数--监听页面卸载 */
-  onUnload() {},
+  onUnload() {
+    try {
+      const app = getApp();
+      app && app.eventBus && app.eventBus.off && this.__onAuthLogin && app.eventBus.off('auth:login', this.__onAuthLogin);
+    } catch (_) {}
+  },
 
   /** 页面相关事件处理函数--监听用户下拉动作 */
   onPullDownRefresh() {},
@@ -110,6 +83,8 @@ Page({
 
   /** 用户点击右上角分享 */
   onShareAppMessage() {},
+
+  
 
   /** 获取聊天室列表（对齐后端：使用 /home/cards 作为房间入口数据） */
   getChatRooms() {
@@ -121,18 +96,16 @@ Page({
           roomId: c.roomId || c.id,
           name: c.title || c.name,
           description: c.description || '',
-          background: c.background || '',
-          icon: c.icon || '',
+          background: (c.background || '').replace(/url\(http:\/\//i, 'url(https://'),
+          iconUrl: ensureHttps(c.icon || ''),
         }));
         this.setData({ chatRooms: rooms });
         this.updateChatRoomsHistory();
       })
       .catch((err) => {
         console.error('获取聊天室列表失败:', err);
-        // 回退到本地静态配置
-        this.setData({ chatRooms: (Array.isArray(CHAT_ROOMS) ? CHAT_ROOMS : []) });
-        this.updateChatRoomsHistory();
-        wx.showToast({ title: '使用本地聊天室配置', icon: 'none' });
+        this.setData({ chatRooms: [] });
+        wx.showToast({ title: '获取聊天室失败', icon: 'none' });
       });
   },
 
@@ -151,26 +124,32 @@ Page({
 
   /** 获取AI角色列表 */
   getMessageList() {
-    // 获取AI聊天历史记录
-    const aiChatHistory = wx.getStorageSync('ai_chat_history') || {};
-    
-    // 为每个AI角色添加历史消息和最后一条消息
-    const aiMessageList = AI_CHARACTERS.map(character => {
-      const history = aiChatHistory[character.userId] || [];
-      const lastMessage = history.length > 0 ? history[history.length - 1] : null;
-      
-      return {
-        ...character,
-        messages: history,
-        lastMessage: lastMessage ? lastMessage.content : character.description,
-        unreadCount: this.getUnreadCount(history)
-      };
-    });
-
-    this.setData({ 
-      messageList: aiMessageList, 
-      loading: false 
-    });
+    // 对齐后端：从 /api/characters/ 获取列表（需要登录）
+    request('/api/characters/')
+      .then((res) => {
+        const list = (res && res.data && (res.data.characters || res.data)) || [];
+        const aiChatHistory = wx.getStorageSync('ai_chat_history') || {};
+        const mapped = list.map((c) => {
+          const history = aiChatHistory[c.characterId] || [];
+          const lastMessage = history.length > 0 ? history[history.length - 1] : null;
+          return {
+            userId: c.characterId,
+            name: c.name,
+            // 使用后端提供的头像绝对 URL，强制 https
+            avatar: ensureHttps(c.avatar || ''),
+            description: c.dimension || '',
+            messages: history,
+            lastMessage: lastMessage ? lastMessage.content : (c.tags && c.tags.join('、')) || '',
+            unreadCount: this.getUnreadCount(history),
+          };
+        });
+        this.setData({ messageList: mapped, loading: false });
+      })
+      .catch((err) => {
+        console.error('获取AI角色列表失败:', err);
+        this.setData({ messageList: [], loading: false });
+        wx.showToast({ title: '请登录后查看AI助手', icon: 'none' });
+      });
   },
 
   /** 计算未读消息数量 */

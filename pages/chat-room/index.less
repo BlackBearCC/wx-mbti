@@ -1,21 +1,36 @@
 /* pages/chat-room/index.wxss */
+@import '/variable.less';
+
 .chat-container {
+  position: relative;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
   height: 100vh;
   font-size: 32rpx;
-  background-color: #f5f5f5;
+  background-color: transparent;
+}
+
+.page-bg {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
 }
 
 .nav-bar {
-  border-bottom: 1rpx solid #e7e7e7;
-  background-color: #ffffff;
+  border-bottom: 1rpx solid rgba(249, 211, 66, 0.2);
+  background-color: @surface-color;
+  color: @text-color-yellow;
 }
 
 .nav-right {
   padding: 16rpx;
-  color: #333333;
+  color: @text-color-yellow;
 }
 
 /* AI角色选择面板 */
@@ -33,12 +48,13 @@
 }
 
 .character-panel {
-  background: #ffffff;
+  background: @surface-color;
   border-radius: 24rpx;
   width: 640rpx;
   max-height: 80vh;
   overflow: hidden;
   margin: 0 32rpx;
+  color: @text-color-yellow;
 }
 
 .panel-header {
@@ -46,8 +62,8 @@
   text-align: center;
   font-size: 36rpx;
   font-weight: 600;
-  color: #333333;
-  border-bottom: 1rpx solid #f0f0f0;
+  color: @text-color-yellow;
+  border-bottom: 1rpx solid rgba(249, 211, 66, 0.1);
 }
 
 .character-list {
@@ -59,11 +75,11 @@
   display: flex;
   align-items: center;
   padding: 24rpx 32rpx;
-  border-bottom: 1rpx solid #f0f0f0;
+  border-bottom: 1rpx solid rgba(249, 211, 66, 0.08);
 }
 
 .character-item:active {
-  background-color: #f8f8f8;
+  background-color: rgba(249, 211, 66, 0.08);
 }
 
 .character-info {
@@ -74,26 +90,27 @@
 .character-name {
   font-size: 32rpx;
   font-weight: 500;
-  color: #333333;
+  color: @text-color-yellow;
   margin-bottom: 8rpx;
 }
 
 .character-desc {
   font-size: 24rpx;
-  color: #999999;
+  color: @text-color-yellow-muted;
   line-height: 1.4;
 }
 
 /* 聊天室成员展示 */
 .room-members {
-  background-color: #ffffff;
+  background-color: @surface-color;
   padding: 24rpx 32rpx;
-  border-bottom: 1rpx solid #e7e7e7;
+  border-bottom: 1rpx solid rgba(249, 211, 66, 0.08);
+  color: @text-color-yellow;
 }
 
 .members-title {
   font-size: 24rpx;
-  color: #999999;
+  color: @text-color-yellow-muted;
   margin-bottom: 16rpx;
 }
 
@@ -115,7 +132,7 @@
 
 .member-name {
   font-size: 20rpx;
-  color: #666666;
+  color: @text-color-yellow-muted;
   margin-top: 8rpx;
   text-align: center;
   max-width: 80rpx;
@@ -125,28 +142,30 @@
 }
 
 .ai-member .member-name {
-  color: #0052d9;
+  color: @text-color-yellow;
 }
 
 .ai-tag {
   position: absolute;
   top: -4rpx;
   right: -4rpx;
-  background: linear-gradient(135deg, #0052d9, #0099ff);
-  color: white;
+  background: linear-gradient(135deg, #2f3440, #1c1f24);
+  color: @text-color-yellow;
   font-size: 16rpx;
   padding: 2rpx 6rpx;
   border-radius: 8rpx;
   font-weight: bold;
-  border: 2rpx solid white;
-  box-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
+  border: 2rpx solid rgba(249, 211, 66, 0.4);
+  box-shadow: 0 2rpx 6rpx rgba(0, 0, 0, 0.24);
 }
 
 /* 消息区域 */
 .content {
   height: 0;
   flex-grow: 1;
-  background-color: #f5f5f5;
+  background-color: transparent;
+  position: relative;
+  z-index: 1;
 }
 
 .messages {
@@ -154,6 +173,7 @@
   flex-direction: column;
   gap: 24rpx;
   padding: 24rpx;
+  color: @text-color-yellow;
 }
 
 .time {
@@ -161,7 +181,7 @@
   justify-content: center;
   align-items: flex-end;
   height: 56rpx;
-  color: #00000066;
+  color: @text-color-yellow-muted;
   font-size: 24rpx;
   line-height: 40rpx;
 }
@@ -172,10 +192,10 @@
   justify-content: center;
   padding: 16rpx 24rpx;
   margin: 0 32rpx;
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(249, 211, 66, 0.08);
   border-radius: 16rpx;
   font-size: 24rpx;
-  color: #666666;
+  color: @text-color-yellow-muted;
   line-height: 1.4;
   text-align: center;
 }
@@ -193,20 +213,21 @@
   padding: 24rpx;
   font-size: 28rpx;
   line-height: 44rpx;
-  background-color: #ffffff;
+  background-color: @surface-color;
   border-radius: 16rpx;
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2rpx 8rpx rgba(249, 211, 66, 0.12);
+  color: @text-color-yellow;
 }
 
 .message.self {
   border-radius: 24rpx 0 24rpx 24rpx;
   margin-left: auto;
-  background-color: #d9e1ff;
+  background-color: #464d5b;
 }
 
 .message.other {
   border-radius: 0 24rpx 24rpx 24rpx;
-  background-color: #ffffff;
+  background-color: @surface-color;
 }
 
 /* AI消息特殊样式 */
@@ -219,7 +240,7 @@
 
 .ai-name {
   font-size: 20rpx;
-  color: #0052d9;
+  color: @text-color-yellow;
   margin-top: 4rpx;
   text-align: center;
   max-width: 80rpx;
@@ -230,9 +251,9 @@
 
 /* AI错误消息样式 */
 .message.other.error {
-  background-color: #ffebee;
-  border: 1rpx solid #ffcdd2;
-  color: #c62828;
+  background-color: #5a2a2a;
+  border: 1rpx solid #f68d8d;
+  color: @text-color-yellow;
 }
 
 /* AI打字效果 */
@@ -247,7 +268,7 @@
   width: 8rpx;
   height: 8rpx;
   border-radius: 50%;
-  background-color: #999;
+  background-color: @text-color-yellow-muted;
   animation: typing-animation 1.4s infinite ease-in-out;
 }
 
@@ -291,13 +312,14 @@
   left: 0;
   right: 0;
   bottom: 0;
+  z-index: 2;
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 24rpx;
   padding: 24rpx 24rpx calc(env(safe-area-inset-bottom) + 24rpx);
-  border-top: 1rpx solid #e7e7e7;
-  background-color: #ffffff;
+  border-top: 1rpx solid rgba(249, 211, 66, 0.08);
+  background-color: @surface-color;
 }
 
 .input {
@@ -306,9 +328,10 @@
   height: 80rpx;
   padding: 16rpx 32rpx;
   border-radius: 40rpx;
-  border: 1rpx solid #dcdcdc;
-  background: #f3f3f3;
+  border: 1rpx solid rgba(249, 211, 66, 0.24);
+  background: #2f3440;
   line-height: 48rpx;
+  color: @text-color-yellow;
 }
 
 .input > input {
@@ -316,12 +339,13 @@
   height: 48rpx;
   line-height: 48rpx;
   margin-bottom: 40rpx;
+  color: @text-color-yellow;
 }
 
 /* 输入框禁用状态 */
 .input > input:disabled {
-  background-color: #f8f8f8;
-  color: #999;
+  background-color: #3a3f4d;
+  color: rgba(249, 211, 66, 0.5);
 }
 
 .send {
@@ -332,6 +356,6 @@
 
 /* 发送按钮禁用状态 */
 .send:disabled {
-  background-color: #e0e0e0 !important;
-  color: #999 !important;
+  background-color: rgba(249, 211, 66, 0.12) !important;
+  color: rgba(249, 211, 66, 0.5) !important;
 } 

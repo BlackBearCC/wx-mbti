@@ -47,7 +47,7 @@
 </view>
 
 <view class="home-release">
-  <t-button theme="primary" size="large" icon="add" shape="round" bindtap="goRelease">
+  <t-button theme="primary" size="large" shape="round" bindtap="goRelease">
     发布
   </t-button>
 </view>

@@ -1,9 +1,26 @@
-/**app.wxss**/
+/** 全局样式（深色主题） */
+@import '/variable.less';
+
 page {
-  background-color: #f3f3f3;
+  background-color: @bg-color;
+  color: @text-color-yellow;
+  /* TDesign 变量覆盖：让组件适配深色与金色主色 */
+  --td-bg-color-page: @bg-color;
+  --td-bg-color-container: @surface-color;
+  --td-bg-color-secondarycontainer: @surface-color-alt;
+  --td-text-color-primary: @text-color-yellow;
+  --td-text-color-secondary: @text-color-yellow-muted;
+  --td-tab-bar-bg-color: @surface-color;
+  --td-tab-bar-color: @text-color-yellow-muted;
+  --td-tab-bar-active-color: @text-color-yellow;
+  --td-tab-bar-active-bg: rgba(249, 211, 66, 0.12);
+  --td-border-color: rgba(249, 211, 66, 0.15);
+  --td-brand-color: @text-color-yellow;
+  --td-brand-color-light: rgba(249, 211, 66, 0.12);
 }
 
 .page {
   height: 100vh;
-  background-color: #fff;
+  background-color: @bg-color;
+  color: @text-color-yellow;
 }

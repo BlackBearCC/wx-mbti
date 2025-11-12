@@ -25,7 +25,7 @@ class AIWebSocketManager {
           url: config.aiWebSocketUrl,
         };
         if (token) {
-          wsOpts.header = { Authorization: token };
+          wsOpts.header = { Authorization: `Bearer ${token}` };
         }
         this.socket = wx.connectSocket(wsOpts);
 

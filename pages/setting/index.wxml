@@ -8,13 +8,13 @@
       title="{{carditem.title}}"
       hover
       arrow
-      left-icon="app"
       url="{{carditem.url}}"
       bordered="true"
-      leftIcon="{{carditem.icon}}"
       data-data="{{carditem}}"
       bindclick="onEleClick"
-    />
+    >
+      <image slot="left-icon" style="width:40rpx;height:40rpx" mode="aspectFit" src="{{ menuIcon }}" />
+    </t-cell>
   </t-cell-group>
 </view>
 
