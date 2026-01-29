@@ -1,0 +1,58 @@
+<!--pages/test/test.wxml-->
+<view class="container">
+  <!-- 加载中状态 -->
+  <view class="loading" wx:if="{{isLoading}}">
+    <view class="spinner"></view>
+    <view>正在加载题目...</view>
+  </view>
+
+  <!-- 错误状态 -->
+  <view wx:elif="{{error}}" class="card">
+    <view class="error">{{error}}</view>
+    <button class="btn btn-primary" bindtap="goBack">返回首页</button>
+  </view>
+
+  <!-- 测试题目 -->
+  <view wx:elif="{{question}}">
+    <!-- 进度条 -->
+    <view class="progress-bar">
+      <view class="progress-fill" style="width: {{progress}}%;"></view>
+    </view>
+    
+    <!-- 进度文字 -->
+    <view class="flex-row justify-between mb-24">
+      <view class="text-secondary">题目 {{currentIndex + 1}} / {{questions.length}}</view>
+      <view class="text-secondary">{{progressPercent}}% 完成</view>
+    </view>
+
+    <!-- 题目卡片 -->
+    <view class="question-card">
+      <view class="question-number">问题 {{question.id}}</view>
+      <view class="question-text">{{question.text}}</view>
+      
+      <view class="option-list">
+        <button 
+          wx:for="{{question.options}}" 
+          wx:key="id"
+          class="option-btn {{selectedOptionId === item.id ? 'selected' : ''}}"
+          bindtap="handleOptionSelect"
+          data-option-id="{{item.id}}"
+        >
+          <text class="option-prefix">{{item.id}}.</text>
+          <text>{{item.text}}</text>
+        </button>
+      </view>
+    </view>
+
+    <!-- 返回按钮 -->
+    <view class="mt-20">
+      <button 
+        class="btn btn-default" 
+        bindtap="goBack"
+        disabled="{{currentIndex === 0}}"
+      >
+        返回首页
+      </button>
+    </view>
+  </view>
+</view>

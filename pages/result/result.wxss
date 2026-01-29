@@ -1,0 +1,149 @@
+/* pages/result/result.wxss */
+.container {
+  padding: 40rpx;
+  max-width: 800rpx;
+  margin: 0 auto;
+}
+
+.loading {
+  text-align: center;
+  padding: 160rpx 40rpx;
+}
+
+.spinner {
+  width: 96rpx;
+  height: 96rpx;
+  border: 8rpx solid #e2e8f0;
+  border-top-color: #6366f1;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 32rpx;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.mt-20 {
+  margin-top: 20rpx;
+}
+
+.text-secondary {
+  color: #64748b;
+  font-size: 28rpx;
+}
+
+.card {
+  background: #ffffff;
+  border-radius: 24rpx;
+  padding: 48rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.08);
+  margin-bottom: 32rpx;
+}
+
+.error {
+  background: #fef2f2;
+  color: #ef4444;
+  padding: 24rpx;
+  border-radius: 16rpx;
+  margin-bottom: 32rpx;
+  text-align: center;
+}
+
+.result-card {
+  text-align: center;
+  padding: 80rpx 48rpx;
+}
+
+.mbti-type {
+  font-size: 128rpx;
+  font-weight: bold;
+  color: #6366f1;
+  margin-bottom: 32rpx;
+  letter-spacing: 8rpx;
+}
+
+.mbti-name {
+  font-size: 48rpx;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 16rpx;
+}
+
+.mbti-description {
+  color: #64748b;
+  font-size: 28rpx;
+  line-height: 1.8;
+  margin-bottom: 48rpx;
+}
+
+.section-title {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.trait-item {
+  margin-bottom: 32rpx;
+}
+
+.trait-item:last-child {
+  margin-bottom: 0;
+}
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.mb-8 {
+  margin-bottom: 8rpx;
+}
+
+.trait-label {
+  font-size: 28rpx;
+  color: #1e293b;
+}
+
+.trait-value {
+  color: #64748b;
+  font-size: 28rpx;
+}
+
+.progress-bar {
+  height: 16rpx;
+  background: #e2e8f0;
+  border-radius: 8rpx;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 8rpx;
+  transition: width 0.3s;
+}
+
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 28rpx 48rpx;
+  border: none;
+  border-radius: 16rpx;
+  font-size: 32rpx;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.btn-primary {
+  background: #6366f1;
+  color: white;
+}
+
+.btn-primary:active {
+  background: #4f46e5;
+}

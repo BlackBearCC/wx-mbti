@@ -1,0 +1,54 @@
+<!--pages/result/result.wxml-->
+<view class="container">
+  <!-- 正在分析状态 -->
+  <view class="loading" wx:if="{{isSubmitting}}">
+    <view class="spinner"></view>
+    <view>正在分析你的性格...</view>
+    <view class="text-secondary mt-20" style="font-size: 24rpx;">基于 Doubao AI 的智能分析</view>
+  </view>
+
+  <!-- 错误状态 -->
+  <view wx:elif="{{!result}}" class="card">
+    <view class="error">未能获取测试结果</view>
+    <button class="btn btn-primary" bindtap="handleRetry">重新测试</button>
+  </view>
+
+  <!-- 结果展示 -->
+  <view wx:else>
+    <!-- MBTI 结果卡片 -->
+    <view class="card result-card">
+      <view class="mbti-type">{{result.type}}</view>
+      <view class="mbti-name">{{result.name}}</view>
+      <view class="mbti-description">{{result.description}}</view>
+    </view>
+
+    <!-- 维度分析卡片 -->
+    <view class="card">
+      <view class="section-title" style="margin-bottom: 32rpx;">性格维度分析</view>
+      
+      <block wx:for="{{traits}}" wx:key="trait">
+        <view class="trait-item">
+          <view class="flex-row justify-between mb-8">
+            <view class="trait-label">{{item.label}}</view>
+            <view class="trait-value">{{item.value}} 分</view>
+          </view>
+          <view class="progress-bar" style="height: 8rpx;">
+            <view 
+              class="progress-fill"
+              style="width: {{item.percent}}%; background: {{item.color}};"
+            ></view>
+          </view>
+        </view>
+      </block>
+    </view>
+
+    <!-- 重新测试按钮 -->
+    <button 
+      class="btn btn-primary" 
+      bindtap="handleRetry"
+      style="width: 100%;"
+    >
+      重新测试
+    </button>
+  </view>
+</view>

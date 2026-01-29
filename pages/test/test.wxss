@@ -1,0 +1,153 @@
+/* pages/test/test.wxss */
+.container {
+  padding: 40rpx;
+  max-width: 800rpx;
+  margin: 0 auto;
+}
+
+.loading {
+  text-align: center;
+  padding: 160rpx 40rpx;
+}
+
+.spinner {
+  width: 96rpx;
+  height: 96rpx;
+  border: 8rpx solid #e2e8f0;
+  border-top-color: #6366f1;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 32rpx;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.error {
+  background: #fef2f2;
+  color: #ef4444;
+  padding: 24rpx;
+  border-radius: 16rpx;
+  margin-bottom: 32rpx;
+  text-align: center;
+}
+
+.progress-bar {
+  height: 16rpx;
+  background: #e2e8f0;
+  border-radius: 8rpx;
+  overflow: hidden;
+  margin-bottom: 32rpx;
+}
+
+.progress-fill {
+  height: 100%;
+  background: #6366f1;
+  transition: width 0.3s;
+}
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.mb-24 {
+  margin-bottom: 24rpx;
+}
+
+.text-secondary {
+  color: #64748b;
+  font-size: 28rpx;
+}
+
+.question-card {
+  background: #ffffff;
+  border-radius: 24rpx;
+  padding: 48rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.08);
+  margin-bottom: 32rpx;
+}
+
+.question-number {
+  color: #6366f1;
+  font-size: 28rpx;
+  font-weight: 600;
+  margin-bottom: 16rpx;
+}
+
+.question-text {
+  font-size: 36rpx;
+  font-weight: 500;
+  color: #1e293b;
+  margin-bottom: 40rpx;
+  line-height: 1.6;
+}
+
+.option-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+}
+
+.option-btn {
+  width: 100%;
+  padding: 32rpx;
+  border: 4rpx solid #e2e8f0;
+  border-radius: 16rpx;
+  background: #ffffff;
+  text-align: left;
+  font-size: 30rpx;
+  color: #1e293b;
+  line-height: 1.6;
+  transition: all 0.2s;
+}
+
+.option-btn:active {
+  border-color: #6366f1;
+  background: #f0f9ff;
+}
+
+.option-btn.selected {
+  border-color: #6366f1;
+  background: #eef2ff;
+  color: #6366f1;
+}
+
+.option-prefix {
+  font-weight: bold;
+  margin-right: 16rpx;
+}
+
+.mt-20 {
+  margin-top: 20rpx;
+}
+
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24rpx 48rpx;
+  border: none;
+  border-radius: 16rpx;
+  font-size: 32rpx;
+  font-weight: 500;
+}
+
+.btn-default {
+  background: #ffffff;
+  border: 2rpx solid #e2e8f0;
+  color: #1e293b;
+}
+
+.btn-default:active {
+  background: #f8fafc;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+}

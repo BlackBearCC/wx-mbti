@@ -1,0 +1,45 @@
+<!--pages/home/home.wxml-->
+<view class="container">
+  <!-- 头部 -->
+  <view class="header">
+    <view class="header-title">MBTI 性格测试</view>
+    <view class="header-subtitle">基于 Doubao AI 的智能 MBTI 分析</view>
+  </view>
+
+  <!-- 关于 MBTI 介绍卡片 -->
+  <view class="card">
+    <view class="section-title" style="margin-bottom: 32rpx;">关于 MBTI 测试</view>
+    <view class="text-secondary mb-32">
+      MBTI（Myers-Briggs Type Indicator）是一种广泛使用的人格类型评估工具，
+      通过四个维度来描述人的性格倾向：
+    </view>
+    
+    <view class="feature-list">
+      <view class="feature-item">
+        <text>E / I</text> - 外向 vs 内向
+      </view>
+      <view class="feature-item">
+        <text>S / N</text> - 感觉 vs 直觉
+      </view>
+      <view class="feature-item">
+        <text>T / F</text> - 思考 vs 情感
+      </view>
+      <view class="feature-item">
+        <text>J / P</text> - 判断 vs 知觉
+      </view>
+    </view>
+
+    <!-- 错误提示 -->
+    <view class="error" wx:if="{{error}}">{{error}}</view>
+
+    <!-- 开始测试按钮 -->
+    <button 
+      class="btn btn-primary" 
+      bindtap="handleStart"
+      disabled="{{isLoading}}"
+      style="width: 100%;"
+    >
+      {{isLoading ? '正在准备题目...' : '开始测试'}}
+    </button>
+  </view>
+</view>
