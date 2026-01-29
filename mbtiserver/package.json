@@ -1,0 +1,33 @@
+{
+  "name": "mbtiserver",
+  "version": "1.0.0",
+  "description": "MBTI测试后端服务，专注MBTI测试逻辑和用户数据管理",
+  "main": "dist/index.js",
+  "scripts": {
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts",
+    "build": "tsc",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "uuid": "^9.0.1",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/cors": "^2.8.17",
+    "@types/node": "^20.10.5",
+    "@types/uuid": "^9.0.7",
+    "typescript": "^5.3.3",
+    "ts-node": "^10.9.2",
+    "jest": "^29.7.0",
+    "@types/jest": "^29.5.11",
+    "ts-jest": "^29.1.1",
+    "supertest": "^6.3.3",
+    "@types/supertest": "^2.0.16"
+  }
+}
