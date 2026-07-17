@@ -22,11 +22,10 @@ class AIWebSocketManager {
       try {
         const token = wx.getStorageSync('access_token');
         const wsOpts = {
-          url: config.aiWebSocketUrl,
+          url: token
+            ? `${config.aiWebSocketUrl}?token=${encodeURIComponent(token)}`
+            : config.aiWebSocketUrl,
         };
-        if (token) {
-          wsOpts.header = { Authorization: `Bearer ${token}` };
-        }
         this.socket = wx.connectSocket(wsOpts);
 
         this.socket.onOpen(() => {

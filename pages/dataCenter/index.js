@@ -9,7 +9,7 @@ Page({
     totalSituationDataList: null,
     totalSituationKeyList: null,
     completeRateDataList: null,
-    complete_rate_keyList: null,
+    completeRateKeysList: null,
     interactionSituationDataList: null,
     interaction_situation_keyList: null,
     areaDataList: null,
